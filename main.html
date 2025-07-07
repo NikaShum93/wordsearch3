@@ -282,6 +282,29 @@ if (wordsListPosition === "none") {
 
     const gridEl = document.getElementById("grid");
     const wordsListEl = document.getElementById("wordsList");
+// 1. Скрываем или показываем wordsList по параметру
+if (wordsListPosition === "none") {
+  wordsListEl.style.display = "none";
+} else {
+  wordsListEl.style.display = "";
+  // 2. Меняем направление флекса для gridArea
+  if (wordsListPosition === "right") {
+    gridArea.style.flexDirection = "row";
+  } else if (wordsListPosition === "left") {
+    gridArea.style.flexDirection = "row-reverse";
+  } else if (wordsListPosition === "top") {
+    gridArea.style.flexDirection = "column-reverse";
+  } else if (wordsListPosition === "bottom") {
+    gridArea.style.flexDirection = "column";
+  }
+  // 3. Стили для списка
+  if (wordsListPosition === "top" || wordsListPosition === "bottom") {
+    wordsListEl.style.flexDirection = "row";
+  } else {
+    wordsListEl.style.flexDirection = "column";
+  }
+}
+
     const messageBox = document.getElementById("messageBox");
     const clickSound = document.getElementById("clickSound");
     const errorSound = document.getElementById("errorSound");
