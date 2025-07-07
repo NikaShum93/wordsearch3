@@ -308,49 +308,122 @@ const wordsListPosition = urlParams.get("wordsListPosition") || "right";
       return letter.toUpperCase();
     }
 
-    // --- ВСТАВКА СЛОВ ---
-    function placeWords() {
-      for (let y = 0; y < gridSize; y++) for (let x = 0; x < gridSize; x++) grid[y][x] = "";
-      for (const wordRaw of words) {
-        const word = formatWord(wordRaw);
-        let placed = false;
-        for (let attempt = 0; attempt < 120; attempt++) {
-          const dirOptions = {
-            easy: [[1,0],[0,1]],
-            medium: [[1,0],[0,1],[1,1]],
-            hard: [[1,0],[0,1],[1,1],[-1,1],[1,-1],[0,-1],[-1,0],[-1,-1]]
-          }[level];
-          const [dx, dy] = dirOptions[Math.floor(Math.random() * dirOptions.length)];
-          const x = Math.floor(Math.random() * gridSize);
-          const y = Math.floor(Math.random() * gridSize);
-          let fits = true;
-          for (let i = 0; i < word.length; i++) {
-            const nx = x + dx * i, ny = y + dy * i;
-            if (nx < 0 || ny < 0 || nx >= gridSize || ny >= gridSize) { fits = false; break; }
-            if (grid[ny][nx] && grid[ny][nx] !== word[i]) { fits = false; break; }
-          }
-          if (fits) {
-            for (let i = 0; i < word.length; i++) {
-              const nx = x + dx * i, ny = y + dy * i;
-              grid[ny][nx] = word[i];
-            }
-            placed = true;
-            break;
-          }
-        }
-        if (!placed) {
-          console.warn('Не удалось вставить слово: ' + wordRaw);
-        }
+    // храним, куда именно мы вставили каждое слово
+const placements = [];
+
+function placeWords() {
+  // 1) очищаем сетку
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      grid[y][x] = "";
+    }
+  }
+  placements.length = 0; // сбрасываем прошлые данные
+
+  // 2) вставляем каждое слово и запоминаем его параметры
+  for (const wordRaw of words) {
+    const word = formatWord(wordRaw);
+    let placed = false;
+
+    for (let attempt = 0; attempt < 120; attempt++) {
+      const dirOptions = {
+        easy:   [[1,0],[0,1]],
+        medium: [[1,0],[0,1],[1,1]],
+        hard:   [[1,0],[0,1],[1,1],[-1,1],[1,-1],[0,-1],[-1,0],[-1,-1]]
+      }[level];
+
+      const [dx, dy] = dirOptions[Math.floor(Math.random() * dirOptions.length)];
+      const x = Math.floor(Math.random() * gridSize);
+      const y = Math.floor(Math.random() * gridSize);
+
+      let fits = true;
+      for (let i = 0; i < word.length; i++) {
+        const nx = x + dx * i, ny = y + dy * i;
+        if (nx < 0 || ny < 0 || nx >= gridSize || ny >= gridSize) { fits = false; break; }
+        if (grid[ny][nx] && grid[ny][nx] !== word[i]) { fits = false; break; }
       }
-      for (let y = 0; y < gridSize; y++) {
-        for (let x = 0; x < gridSize; x++) {
-          if (!grid[y][x]) {
-            let rnd = alphabetSet[Math.floor(Math.random() * alphabetSet.length)];
-            grid[y][x] = formatLetter(rnd);
-          }
+
+      if (fits) {
+        for (let i = 0; i < word.length; i++) {
+          const nx = x + dx * i, ny = y + dy * i;
+          grid[ny][nx] = word[i];
         }
+        // запоминаем, где и в каком направлении
+        placements.push({ word, start:{x,y}, dir:{dx,dy} });
+        placed = true;
+        break;
       }
     }
+
+    if (!placed) {
+      console.warn('Не удалось вставить слово:', wordRaw);
+    }
+  }
+
+  // 3) заполняем всё остальное случайными буквами
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      if (!grid[y][x]) {
+        const rnd = alphabetSet[Math.floor(Math.random() * alphabetSet.length)];
+        grid[y][x] = formatLetter(rnd);
+      }
+    }
+  }
+
+  // 4) убираем лишние вхождения каждого слова
+  placements.forEach(p => removeAccidental(p.word, p.start, p.dir));
+}
+// найдёт все вхождения word по всей сетке
+function findMatches(word) {
+  const matches = [];
+  const L = word.length;
+  const dirs = [[1,0],[0,1],[1,1],[-1,1],[1,-1],[0,-1],[-1,0],[-1,-1]];
+
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      dirs.forEach(([dx,dy]) => {
+        let ok = true;
+        for (let i = 0; i < L; i++) {
+          const nx = x + dx*i, ny = y + dy*i;
+          if (
+            nx < 0 || ny < 0 ||
+            nx >= gridSize || ny >= gridSize ||
+            grid[ny][nx] !== word[i]
+          ) { ok = false; break; }
+        }
+        if (ok) matches.push({ start:{x,y}, dir:{dx,dy} });
+      });
+    }
+  }
+  return matches;
+}
+
+// убирает все совпадения, кроме намеренного
+function removeAccidental(word, intendedStart, intendedDir) {
+  const intendedKey = JSON.stringify({ start:intendedStart, dir:intendedDir });
+
+  // повторяем несколько раз, чтобы наверняка
+  for (let pass = 0; pass < 5; pass++) {
+    const all = findMatches(word);
+    const extras = all.filter(m => JSON.stringify(m) !== intendedKey);
+    if (extras.length === 0) break;
+
+    extras.forEach(m => {
+      // выберем случайную позицию в лишнем вхождении
+      const i = Math.floor(Math.random() * word.length);
+      const x = m.start.x + m.dir.dx * i;
+      const y = m.start.y + m.dir.dy * i;
+
+      // заменяем букву на случайную другую
+      let newChar;
+      do {
+        newChar = alphabetSet[Math.floor(Math.random() * alphabetSet.length)];
+      } while (newChar === grid[y][x]);
+
+      grid[y][x] = formatLetter(newChar);
+    });
+  }
+}
 
     // --- СЛОВО В ПРАВИЛЬНОМ РЕГИСТРЕ/АЛФАВИТЕ ---
     function formatWord(word) {
@@ -472,8 +545,12 @@ const wordsListPosition = urlParams.get("wordsListPosition") || "right";
       winSound.play();
       document.querySelectorAll(".cell").forEach(c => c.classList.add("rainbow", "glim"));
       setTimeout(() => {
-     messageBox.classList.add("show");
-      }, 650);
+  // проставляем текст
+  messageBox.innerText = winText;
+
+  // показываем окно
+  messageBox.classList.add("show");
+}, 650);
     }
   } else {
     const matching = words.some(word =>
