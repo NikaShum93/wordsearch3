@@ -136,6 +136,32 @@
       background: #aaffc66a;
       border-color: #8eeabd;
     }
+/* Позиции списка слов */
+.words-left {
+  order: -1;
+  margin-right: 20px;
+}
+.words-right {
+  order: 1;
+  margin-left: 20px;
+}
+.words-top, .words-bottom {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+.words-top {
+  order: -1;
+  margin-bottom: 15px;
+}
+.words-bottom {
+  order: 2;
+  margin-top: 15px;
+}
+.words-hidden {
+  display: none !important;
+}
 
     #messageBox {
       position: absolute;
@@ -212,7 +238,6 @@ const wordsListPosition = urlParams.get("wordsListPosition") || "right";
     };
 
     // --- ГРИД ---
-    const gridSize = 10;
     const alphabetSet = alphabets[alphabet] || alphabets.latin;
     const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(""));
 
