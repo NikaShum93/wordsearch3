@@ -248,9 +248,15 @@
 const neon = urlParams.get("neon") === "1";
 const neonColor = "#" + (urlParams.get("neonColor") || "00ffff");
 const gridSize = parseInt(urlParams.get("gridSize") || "10");
-const textColor = urlParams.get("textColor") || "#00ffff";
-const borderColor = urlParams.get("borderColor") || "#00ffff";
-const bgColor = urlParams.get("bgColor") || "rgba(255, 255, 255, 0.09)";
+const textColorParam = urlParams.get("textColor");
+const textColor = textColorParam?.startsWith("rgba") ? textColorParam : "#" + (textColorParam || "00ffff");
+
+const borderColorParam = urlParams.get("borderColor");
+const borderColor = borderColorParam?.startsWith("rgba") ? borderColorParam : "#" + (borderColorParam || "00ffff");
+
+const bgColorParam = urlParams.get("bgColor");
+const bgColor = bgColorParam?.startsWith("rgba") ? bgColorParam : "#" + (bgColorParam || "ffffff");
+
 const wordsListPosition = urlParams.get("wordsListPosition") || "right";
     const sparklesOn = urlParams.get("sparkles") === "1";
     const alphabet = urlParams.get("alphabet") || "latin";
