@@ -137,12 +137,6 @@ display: grid;
   font-size: 18px;
   z-index: 5;
 }
-/* 2) Позиционирование */
-#wordsList.bottom  { bottom: 16px; left: 50%;  transform: translateX(-50%); flex-direction: row; }
-#wordsList.top     { top: 16px;    left: 50%;  transform: translateX(-50%); flex-direction: row; }
-#wordsList.left    { top: 50%;     left: 16px; transform: translateY(-50%); flex-direction: column; }
-#wordsList.right   { top: 50%;     right: 16px;transform: translateY(-50%); flex-direction: column; }
-#wordsList.none    { display: none; }
 /* 3) Стили для элементов списка */
 #wordsList li {
   margin-bottom: 9px;
@@ -259,10 +253,16 @@ if (wordsListPosition === "right") {
   gridArea.style.flexDirection = "column-reverse";
 } else if (wordsListPosition === "bottom") {
   gridArea.style.flexDirection = "column";
-} else if (wordsListPosition === "none") {
+if (wordsListPosition === "none") {
   wordsListEl.style.display = "none";
-}
-    const sparklesOn = urlParams.get("sparkles") === "1";
+} else {
+  wordsListEl.style.display = "";
+  if (wordsListPosition === "top" || wordsListPosition === "bottom") {
+    wordsListEl.style.flexDirection = "row";
+  } else {
+    wordsListEl.style.flexDirection = "column";
+  }
+}    const sparklesOn = urlParams.get("sparkles") === "1";
     const alphabet = urlParams.get("alphabet") || "latin";
 
     // --- АЛФАВИТЫ ---
@@ -282,8 +282,6 @@ if (wordsListPosition === "right") {
 
     const gridEl = document.getElementById("grid");
     const wordsListEl = document.getElementById("wordsList");
-wordsListEl.classList.remove("bottom", "top", "left", "right", "none");
-wordsListEl.classList.add(wordsListPosition);
     const messageBox = document.getElementById("messageBox");
     const clickSound = document.getElementById("clickSound");
     const errorSound = document.getElementById("errorSound");
@@ -501,8 +499,8 @@ function removeAccidental(word, intendedStart, intendedDir) {
         sparkle.style.top = y + 'px';
         const angle = Math.random() * 2 * Math.PI;
         const dist = 21 + Math.random() * 18;
-        sparkle.style.setProperty('--tx', `${Math.cos(angle)*dist}px`);
-        sparkle.style.setProperty('--ty', `${Math.sin(angle)*dist}px`);
+        sparkle.style.setProperty('--tx', ${Math.cos(angle)*dist}px);
+        sparkle.style.setProperty('--ty', ${Math.sin(angle)*dist}px);
         setTimeout(() => sparkle.remove(), 830 + Math.random()*120);
         container.appendChild(sparkle);
       }
