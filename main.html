@@ -469,15 +469,14 @@ function removeAccidental(word, intendedStart, intendedDir) {
     }
 
     function updateWordList() {
-      wordsListEl.innerHTML = "";
-      wordsListEl.className = style === "kids" ? "kids" : "";
-      words.forEach(word => {
-        const li = document.createElement("li");
-        li.textContent = formatWord(word).join("");
-        if (foundWords.includes(formatWord(word).join(""))) li.classList.add("found");
-        wordsListEl.appendChild(li);
-      });
-    }
+       wordsListEl.innerHTML = "";
+  words.forEach(word => {
+    const li = document.createElement("li");
+    li.textContent = formatWord(word).join("");
+    if (foundWords.includes(formatWord(word).join(""))) li.classList.add("found");
+    wordsListEl.appendChild(li);
+  });
+}
 
     // --- SPARKLES ---
     function createSparkles(x, y, container) {
