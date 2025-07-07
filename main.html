@@ -158,7 +158,7 @@ display: grid;
 opacity: 0;
   pointer-events: none;
   transition: opacity .3s, transform .3s;
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%) scale(0.8);
       background: var(--cell-bg);
       padding: 34px 60px;
       border-radius: 20px;
@@ -167,7 +167,6 @@ opacity: 0;
       font-size: 26px;
       font-weight: bold;
       text-align: center;
-      display: block;;
       z-index: 10;
       box-shadow: 0 0 12px var(--main-color);
     }
@@ -500,6 +499,7 @@ const gridArea = document.getElementById("gridArea");
 container.classList.remove("words-left", "words-right", "words-top", "words-bottom", "words-none");
 container.classList.add("words-" + wordsListPosition);
 placeWords();
+
 renderGrid();
 updateWordList();
 gridEl.addEventListener("click", handleClick);
