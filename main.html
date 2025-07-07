@@ -96,6 +96,9 @@
       animation: rainbow-glow 2.1s linear infinite;
   background: transparent !important;
     }
+.cell.glim {
+  animation: grid-glim 2.5s infinite;
+}
 .neon .cell {
   box-shadow: 0 0 12px var(--main-color), 0 0 28px var(--main-color);
 }
@@ -108,6 +111,13 @@
       80%  { text-shadow: 0 0 20px #b666ff, 0 0 30px #fff7; }
       100% { text-shadow: 0 0 20px #ff00c8, 0 0 30px #fff7; }
     }
+@keyframes grid-glim {
+  0%   { box-shadow: 0 0 12px red; }
+  25%  { box-shadow: 0 0 12px orange; }
+  50%  { box-shadow: 0 0 12px lime; }
+  75%  { box-shadow: 0 0 12px cyan; }
+  100% { box-shadow: 0 0 12px red; }
+}
 .neon .cell {
   box-shadow: 0 0 12px var(--main-color), 0 0 28px var(--main-color);
 }
@@ -146,29 +156,42 @@
 .words-left {
   order: -1;
   margin-right: 20px;
+  flex-direction: row;
 }
 .words-right {
   order: 1;
   margin-left: 20px;
-}
-.words-top, .words-bottom {
-  width: 100%;
-  text-align: center;
-  display: flex;
-  justify-content: center;
+  flex-direction: row;
 }
 .words-top {
   order: -1;
   margin-bottom: 15px;
+  flex-direction: column;
 }
 .words-bottom {
   order: 2;
   margin-top: 15px;
+  flex-direction: column-reverse;
 }
-.words-hidden {
+.words-none #wordsList {
   display: none !important;
 }
 
+/* Дополнительные стили для списка слов */
+.words-left #wordsList,
+.words-right #wordsList {
+  display: flex;
+  flex-direction: column;
+}
+
+.words-top #wordsList,
+.words-bottom #wordsList {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
     #messageBox {
       position: absolute;
       top: 40%;
@@ -256,7 +279,6 @@ const borderColor = borderColorParam?.startsWith("rgba") ? borderColorParam : "#
 
 const bgColorParam = urlParams.get("bgColor");
 const bgColor = bgColorParam?.startsWith("rgba") ? bgColorParam : "#" + (bgColorParam || "ffffff");
-
 const wordsListPosition = urlParams.get("wordsListPosition") || "right";
     const sparklesOn = urlParams.get("sparkles") === "1";
     const alphabet = urlParams.get("alphabet") || "latin";
@@ -484,8 +506,8 @@ if (wordsListPosition !== "none") {
 
         selection = [];
         if (foundWords.length === words.length) {
-          winSound.play();
-          document.querySelectorAll(".cell").forEach(c => c.classList.add("rainbow"));
+  winSound.play();
+  document.querySelectorAll(".cell").forEach(c => c.classList.add("rainbow", "glim"));
           setTimeout(() => {
             messageBox.innerText = winText;
             messageBox.style.display = "block";
