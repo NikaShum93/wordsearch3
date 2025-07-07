@@ -6,6 +6,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
   <style>
     :root {
+
       --main-color: #00ffff;
       --text-color: #00ffff;
       --border-color: #00ffff;
@@ -21,7 +22,12 @@
       justify-content: center;
       align-items: center;
     }
-
+#grid {
+  display: grid;
+  grid-template-columns: repeat(var(--n), 44px);
+  grid-auto-rows: 44px;
+  gap: 7px;
+}
     #container {
       display: flex;
  flex-direction: column; 
@@ -123,10 +129,10 @@
 }
     #wordsList {
       list-style: none;
-      padding: 10px 12px;
+      padding: 8px;
       border-radius: 13px;
-      border: 2px solid var(--border-color);
-      background: var(--cell-bg);
+      border: none;
+      background: none; 
       min-width: 110px;
       max-width: 170px;
       max-height: 80vh;
@@ -136,8 +142,8 @@
 
     #wordsList li {
       margin-bottom: 9px;
-      padding: 6px;
-      border: 1px solid var(--border-color);
+      padding: 6px 8px;
+      border: 2px solid var(--border-color);
       border-radius: 6px;
       text-align: center;
       font-size: 18px;
@@ -226,6 +232,7 @@
 const neon  = urlParams.get("neon") === "1" || style === "neon";
 const neonColor = "#" + (urlParams.get("neonColor") || "00ffff");
 const gridSize = parseInt(urlParams.get("gridSize") || "10");
+document.documentElement.style.setProperty('--n', gridSize);
 const textColorParam = urlParams.get("textColor");
 const textColor = textColorParam?.startsWith("rgba") ? textColorParam : "#" + (textColorParam || "00ffff");
 
