@@ -7,7 +7,11 @@
   <style>
     :root {
       --main-color: #00ffff;
+      --text-color: #00ffff;
+      --border-color: #00ffff;
+      --cell-bg: rgba(255, 255, 255, 0.09);
     }
+
     html, body {
       margin: 0; padding: 0;
       width: 100vw; height: 100vh;
@@ -17,67 +21,81 @@
       justify-content: center;
       align-items: center;
     }
+
     #container {
-  display: flex;
-  gap: 30px;
-  align-items: center;
-  width: 940px;
-  max-width: 100vw;
-  justify-content: center;
-  flex-direction: row;
-}
+      display: flex;
+      gap: 30px;
+      align-items: center;
+      width: 940px;
+      max-width: 100vw;
+      justify-content: center;
+    }
+
     #game {
       display: flex;
       flex-direction: column;
       align-items: center;
       position: relative;
     }
+
     #grid {
       display: grid;
+      grid-template-columns: repeat(10, 1fr);
       gap: 7px;
       background: transparent;
       margin-bottom: 8px;
     }
+
     .cell {
       position: relative;
       width: 44px; height: 44px;
-      background: var(--bg-color, #111);
-      border: 2px solid var(--border-color, #00ffff);
-      color: var(--main-color, #00ffff);
-      border-radius: 12px;
+      background: var(--cell-bg);
+      border: 2px solid var(--border-color);
+      color: var(--text-color);
       font-weight: bold;
       font-size: 23px;
       letter-spacing: 0.03em;
-      text-shadow: 0 0 12px var(--main-color, #00ffff), 0 0 24px #fff8;
+      text-shadow: 0 0 12px var(--text-color), 0 0 24px #fff8;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: 0.18s;
+      z-index: 1;
+      user-select: none;
+      font-family: inherit;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: 0.18s;
-      user-select: none;
     }
+
     .cell.selected {
-      background: var(--main-color, #00ffff);
+      background: var(--main-color);
       color: #222;
-      box-shadow: 0 0 22px 8px var(--main-color, #00ffff);
+      box-shadow: 0 0 22px 8px var(--main-color);
     }
+
     .cell.correct {
       background: #38ff8e;
       color: #000;
       box-shadow: 0 0 16px #32ffd6;
     }
+
     .cell.error {
       background: #e74c3c;
       color: #fff;
       animation: error-blink 0.22s 2;
     }
+
     @keyframes error-blink {
       0%,100% { background: #e74c3c; }
       50% { background: #fff; color:#e74c3c; }
     }
+
+    /* Радужное свечение (для ячеек в стиле "rainbow") */
     .cell.rainbow {
       animation: rainbow-glow 2.1s linear infinite;
     }
+
     @keyframes rainbow-glow {
       0%   { text-shadow: 0 0 20px #ff00c8, 0 0 30px #fff7; }
       20%  { text-shadow: 0 0 20px #fff600, 0 0 30px #fff7; }
@@ -86,75 +104,104 @@
       80%  { text-shadow: 0 0 20px #b666ff, 0 0 30px #fff7; }
       100% { text-shadow: 0 0 20px #ff00c8, 0 0 30px #fff7; }
     }
+
+    #wordsList {
+      list-style: none;
+      padding: 10px 12px;
+      border-radius: 13px;
+      border: 2px solid var(--border-color);
+      background: var(--cell-bg);
+      min-width: 110px;
+      max-width: 170px;
+      max-height: 80vh;
+      overflow-y: auto;
+      font-size: 18px;
+    }
+
+    #wordsList li {
+      margin-bottom: 9px;
+      padding: 6px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      text-align: center;
+      font-size: 18px;
+      background: var(--cell-bg);
+      color: var(--text-color);
+      transition: background 0.2s;
+    }
+
+    #wordsList li.found {
+      text-decoration: line-through;
+      color: #888;
+      background: #aaffc66a;
+      border-color: #8eeabd;
+    }
+
     #messageBox {
       position: absolute;
-      top: 40%; left: 50%; transform: translate(-50%, -50%);
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.82);
       padding: 34px 60px;
       border-radius: 20px;
-      background: rgba(0, 0, 0, 0.82);
       border: 3px solid var(--main-color);
       color: var(--main-color);
-      font-size: 26px; font-weight: bold;
+      font-size: 26px;
+      font-weight: bold;
       text-align: center;
       display: none;
+      z-index: 10;
       box-shadow: 0 0 28px #0ff8;
     }
-  #wordsList {
-  list-style: none;
-  padding: 10px;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 18px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-#wordsList li {
-  padding: 8px 12px;
-  background: var(--bg-color, #111);
-  border: 2px solid var(--border-color, #00ffff);
-  color: var(--main-color, #00ffff);
-  border-radius: 12px;
-  text-align: center;
-  font-weight: bold;
-  letter-spacing: 0.03em;
-  box-shadow: 0 0 12px var(--main-color, #00ffff);
-  transition: 0.2s;
-}
-
-#wordsList li.found {
-  text-decoration: line-through;
-  opacity: 0.5;
-  box-shadow: none;
-}
-</style>
+    /* Sparkles */
+    .sparkle {
+      position: absolute;
+      pointer-events: none;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff 55%, #38ffec 70%, #ee55ff 90%, transparent 100%);
+      opacity: 0.87;
+      z-index: 999;
+      animation: sparkle-move 0.85s cubic-bezier(.33,.62,.56,1) forwards;
+    }
+    @keyframes sparkle-move {
+      0% { opacity: 1; transform: scale(1);}
+      90% { opacity: 0.8;}
+      100% { opacity: 0; transform: translate(var(--tx,0), var(--ty,0)) scale(0.2);}
+    }
+  </style>
 </head>
 <body>
   <div id="container">
     <div id="game">
       <div id="grid"></div>
       <div id="messageBox"></div>
+    </div>
     <ul id="wordsList"></ul>
   </div>
+  <!-- Звуки -->
+  <audio id="clickSound" src="https://nikashum93.github.io/wordsearch/click.mp3" preload="auto"></audio>
+  <audio id="errorSound" src="https://nikashum93.github.io/wordsearch/error.mp3" preload="auto"></audio>
+  <audio id="winSound" src="https://nikashum93.github.io/wordsearch/win.mp3" preload="auto"></audio>
   <script>
-    const urlParams = new URLSearchParams(location.search);
-    const words = (urlParams.get("words") || "HELLO,WORLD").split(",").map(w => w.trim());
+    // --- ПАРАМЕТРЫ ИЗ URL ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const words = (urlParams.get("words") || "HAT,KEY,LAMP").split(",").map(w => w.trim()).filter(Boolean);
+    const winText = decodeURIComponent(urlParams.get("winText") || "Ты нашёл все слова!");
     const level = urlParams.get("level") || "medium";
     const caseType = urlParams.get("case") || "uppercase";
-    const alphabet = urlParams.get("alphabet") || "latin";
-    const style = urlParams.get("style") || "light";
-    const winText = decodeURIComponent(urlParams.get("winText") || "Поздравляем!");
+    const style = urlParams.get("style") || "neon";
+const gridSize = parseInt(urlParams.get("gridSize") || "10");
+const textColor = urlParams.get("textColor") || "#00ffff";
+const borderColor = urlParams.get("borderColor") || "#00ffff";
+const bgColor = urlParams.get("bgColor") || "rgba(255, 255, 255, 0.09)";
+const wordsListPosition = urlParams.get("wordsListPosition") || "right";
     const sparklesOn = urlParams.get("sparkles") === "1";
-    const neon = urlParams.get("neon") === "1";
-    const neonColor = urlParams.get("neonColor") || "#00ffff";
-    const bgColor = urlParams.get("bgColor") || "#111111";
-    const borderColor = urlParams.get("borderColor") || "#00ffff";
-    const gridSize = parseInt(urlParams.get("gridSize")) || 10;
-const wordListPosition = urlParams.get("wordList") || "left";
+    const alphabet = urlParams.get("alphabet") || "latin";
 
-    const alphabetSet = {
+    // --- АЛФАВИТЫ ---
+    const alphabets = {
       latin: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
       cyrillic: "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ",
       french: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
@@ -162,42 +209,57 @@ const wordListPosition = urlParams.get("wordList") || "left";
       spanish: "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ",
       pinyin: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
       hiragana: "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん"
-    }[alphabet];
+    };
 
-    document.documentElement.style.setProperty('--main-color', neon ? neonColor : '#00ffff');
-    document.documentElement.style.setProperty('--bg-color', `#${bgColor}`);
-    document.documentElement.style.setProperty('--border-color', `#${borderColor}`);
+    // --- ГРИД ---
+    const gridSize = 10;
+    const alphabetSet = alphabets[alphabet] || alphabets.latin;
+    const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(""));
 
     const gridEl = document.getElementById("grid");
-    gridEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+    const wordsListEl = document.getElementById("wordsList");
+    const messageBox = document.getElementById("messageBox");
+    const clickSound = document.getElementById("clickSound");
+    const errorSound = document.getElementById("errorSound");
+    const winSound = document.getElementById("winSound");
 
-    const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(""));
-    const directions = {
-      easy: [[1,0],[0,1]],
-      medium: [[1,0],[0,1],[1,1]],
-      hard: [[1,0],[0,1],[1,1],[-1,1],[1,-1],[0,-1],[-1,0],[-1,-1]]
-    }[level];
+    // --- НАСТРОЙКИ ЗВУКА ---
+    clickSound.volume = 1.0;
+    errorSound.volume = 1.0;
+    winSound.volume = 0.8;
 
+    // --- ТЕМА/СТИЛЬ ---
+    function applyTheme() {
+      let color = "#00ffff";
+      let font = "'Orbitron', Arial, sans-serif";
+      if (style === "neon") color = "#00ffff";
+      if (style === "rainbow") color = "#ff00c8";
+      document.documentElement.style.setProperty('--main-color', color);
+      document.documentElement.style.setProperty('--cell-font', font);
+      document.documentElement.style.setProperty('--text-color', textColor);
+      document.documentElement.style.setProperty('--border-color', borderColor);
+      document.documentElement.style.setProperty('--cell-bg', bgColor);
+    }
+
+    // --- РЕГИСТР ---
     function formatLetter(letter) {
-      return caseType === "lowercase" ? letter.toLowerCase() : letter.toUpperCase();
+      if (caseType === "lowercase") return letter.toLowerCase();
+      return letter.toUpperCase();
     }
 
-    function formatWord(word) {
-      return [...word]
-        .map(l => l.normalize('NFD').replace(/[\u0300-\u036f]/g, ''))
-        .map(l => {
-          let up = l.toUpperCase();
-          return alphabetSet.includes(up) ? formatLetter(up) : null;
-        })
-        .filter(l => l !== null);
-    }
-
+    // --- ВСТАВКА СЛОВ ---
     function placeWords() {
+      for (let y = 0; y < gridSize; y++) for (let x = 0; x < gridSize; x++) grid[y][x] = "";
       for (const wordRaw of words) {
         const word = formatWord(wordRaw);
         let placed = false;
         for (let attempt = 0; attempt < 120; attempt++) {
-          const [dx, dy] = directions[Math.floor(Math.random() * directions.length)];
+          const dirOptions = {
+            easy: [[1,0],[0,1]],
+            medium: [[1,0],[0,1],[1,1]],
+            hard: [[1,0],[0,1],[1,1],[-1,1],[1,-1],[0,-1],[-1,0],[-1,-1]]
+          }[level];
+          const [dx, dy] = dirOptions[Math.floor(Math.random() * dirOptions.length)];
           const x = Math.floor(Math.random() * gridSize);
           const y = Math.floor(Math.random() * gridSize);
           let fits = true;
@@ -215,129 +277,165 @@ const wordListPosition = urlParams.get("wordList") || "left";
             break;
           }
         }
-        if (!placed) console.warn('Не удалось вставить слово: ' + wordRaw);
+        if (!placed) {
+          console.warn('Не удалось вставить слово: ' + wordRaw);
+        }
       }
-      for (let y = 0; y < gridSize; y++)
-        for (let x = 0; x < gridSize; x++)
-          if (!grid[y][x]) grid[y][x] = formatLetter(alphabetSet[Math.floor(Math.random() * alphabetSet.length)]);
-    }
-
-    function renderGrid() {
-      gridEl.innerHTML = "";
       for (let y = 0; y < gridSize; y++) {
         for (let x = 0; x < gridSize; x++) {
-          const cell = document.createElement("div");
-          cell.className = "cell";
-          if (style === "rainbow") cell.classList.add("rainbow");
-          cell.textContent = grid[y][x];
-          cell.dataset.x = x;
-          cell.dataset.y = y;
-          gridEl.appendChild(cell);
+          if (!grid[y][x]) {
+            let rnd = alphabetSet[Math.floor(Math.random() * alphabetSet.length)];
+            grid[y][x] = formatLetter(rnd);
+          }
         }
       }
     }
 
-    function showWinMessage() {
-      const box = document.getElementById("messageBox");
-      box.textContent = winText;
-      box.style.display = "block";
+    // --- СЛОВО В ПРАВИЛЬНОМ РЕГИСТРЕ/АЛФАВИТЕ ---
+    function formatWord(word) {
+      return [...word]
+        .map(l => l.normalize('NFD').replace(/[\u0300-\u036f]/g, ''))
+        .map(l => {
+          let up = l.toUpperCase();
+          if (alphabetSet.includes(up)) return formatLetter(up);
+          return null;
+        })
+        .filter(l => l !== null);
     }
 
-    placeWords();
-renderGrid();
-updateWordList();
-
-// --- ВЗАИМОДЕЙСТВИЕ ---
-let selection = [];
-let foundWords = [];
-
-function checkLine() {
-  if (selection.length < 2) return false;
-  const first = selection[0];
-  const last = selection[selection.length - 1];
-  const dx = last.dataset.x - first.dataset.x;
-  const dy = last.dataset.y - first.dataset.y;
-  return (dx === 0 || dy === 0 || Math.abs(dx) === Math.abs(dy));
-}
-
-function clearSelection(error = false) {
-  selection.forEach(cell => {
-    cell.classList.remove("selected");
-    if (error) {
-      cell.classList.add("error");
-      setTimeout(() => cell.classList.remove("error"), 350);
+    // --- ОТРИСОВКА ---
+    let cellRefs = [];
+    function renderGrid() {
+      gridEl.innerHTML = "";
+      cellRefs = [];
+      for (let y = 0; y < gridSize; y++) {
+        for (let x = 0; x < gridSize; x++) {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          // Эффекты стиля
+          if (style === "rainbow") cell.classList.add("rainbow");
+                   cell.style.fontFamily = (style === "kids")
+            ? "'Comic Neue', 'Fredoka One', Arial, sans-serif"
+            : "'Orbitron', Arial, sans-serif";
+          cell.dataset.x = x;
+          cell.dataset.y = y;
+          cell.textContent = grid[y][x];
+          gridEl.appendChild(cell);
+          cellRefs.push(cell);
+        }
+      }
     }
-  });
-  selection = [];
-}
 
-function updateWordList() {
+    function updateWordList() {
+      wordsListEl.innerHTML = "";
+      wordsListEl.className = style === "kids" ? "kids" : "";
+      words.forEach(word => {
+        const li = document.createElement("li");
+        li.textContent = formatWord(word).join("");
+        if (foundWords.includes(formatWord(word).join(""))) li.classList.add("found");
+        wordsListEl.appendChild(li);
+      });
+    }
+
+    // --- SPARKLES ---
+    function createSparkles(x, y, container) {
+      for (let i = 0; i < 13; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.style.left = x + 'px';
+        sparkle.style.top = y + 'px';
+        const angle = Math.random() * 2 * Math.PI;
+        const dist = 21 + Math.random() * 18;
+        sparkle.style.setProperty('--tx', `${Math.cos(angle)*dist}px`);
+        sparkle.style.setProperty('--ty', `${Math.sin(angle)*dist}px`);
+        setTimeout(() => sparkle.remove(), 830 + Math.random()*120);
+        container.appendChild(sparkle);
+      }
+    }
+
+    // --- ВЗАИМОДЕЙСТВИЕ ---
+    let selection = [];
+    let foundWords = [];
+
+    function checkLine() {
+      if (selection.length < 2) return false;
+      const first = selection[0];
+      const last = selection[selection.length - 1];
+      const dx = last.dataset.x - first.dataset.x;
+      const dy = last.dataset.y - first.dataset.y;
+      return (dx === 0 || dy === 0 || Math.abs(dx) === Math.abs(dy));
+    }
+
+    function clearSelection(error = false) {
+      selection.forEach(cell => {
+        cell.classList.remove("selected");
+        if (error) {
+          cell.classList.add("error");
+          setTimeout(() => cell.classList.remove("error"), 350);
+        }
+      });
+      selection = [];
+    }
+
+    function handleClick(e) {
+      if (!e.target.classList.contains("cell")) return;
+      const cell = e.target;
+      clickSound.currentTime = 0;
+      clickSound.play();
+      // Запрет двойного выбора одной буквы в текущем выделении
+      if (selection.includes(cell)) return;
+      cell.classList.add("selected");
+      selection.push(cell);
+      const selectedWord = selection.map(c => c.textContent).join("");
+      if (words.map(w => formatWord(w).join("")).includes(selectedWord) && checkLine()) {
+        selection.forEach(c => {
+          c.classList.add("correct");
+          c.classList.remove("selected");
+        });
+        foundWords.push(selectedWord);
+if (wordsListPosition !== "none") {
   const list = document.getElementById("wordsList");
-  list.innerHTML = "";
-  words.forEach(word => {
-    const li = document.createElement("li");
-    const formatted = formatWord(word).join("");
-    li.textContent = formatted;
-    if (foundWords.includes(formatted)) li.classList.add("found");
-    list.appendChild(li);
-  });
-}
+  list.style.display = "block";
+  list.style.order = (wordsListPosition === "left") ? -1 : 1;
+  list.style.alignSelf = (wordsListPosition === "top" || wordsListPosition === "bottom") ? "stretch" : "flex-start";
+  list.style.flexDirection = "column";
 
-const clickSound = document.getElementById("clickSound");
-const errorSound = document.getElementById("errorSound");
-const winSound = document.getElementById("winSound");
-
-clickSound.volume = 1.0;
-errorSound.volume = 1.0;
-winSound.volume = 0.8;
-
-gridEl.addEventListener("click", (e) => {
-  if (!e.target.classList.contains("cell")) return;
-  const cell = e.target;
-  if (selection.includes(cell)) return;
-
-  clickSound.currentTime = 0;
-  clickSound.play();
-  cell.classList.add("selected");
-  selection.push(cell);
-
-  const selectedWord = selection.map(c => c.textContent).join("");
-  const formattedWords = words.map(w => formatWord(w).join(""));
-
-  if (formattedWords.includes(selectedWord) && checkLine()) {
-    selection.forEach(c => {
-      c.classList.add("correct");
-      c.classList.remove("selected");
-    });
-    foundWords.push(selectedWord);
-    clearSelection();
-    if (foundWords.length === words.length) {
-      winSound.play();
-      showWinMessage();
-    }
-  } else {
-    const matching = formattedWords.some(word => word.startsWith(selectedWord));
-    if (!matching || selection.length > Math.max(...formattedWords.map(w => w.length))) {
-      errorSound.currentTime = 0;
-      errorSound.play();
-      clearSelection(true);
-    }
+  if (wordsListPosition === "top" || wordsListPosition === "bottom") {
+    const container = document.getElementById("container");
+    container.style.flexDirection = "column";
+    if (wordsListPosition === "top") container.prepend(list);
+    else container.appendChild(list);
   }
-});
-  if (wordListPosition === "left") {
-  document.getElementById("container").style.flexDirection = "row";
-} else if (wordListPosition === "right") {
-  document.getElementById("container").style.flexDirection = "row-reverse";
-} else if (wordListPosition === "top") {
-  document.getElementById("container").style.flexDirection = "column";
-} else if (wordListPosition === "bottom") {
-  document.getElementById("container").style.flexDirection = "column-reverse";
-} else if (wordListPosition === "none") {
+} else {
   document.getElementById("wordsList").style.display = "none";
 }
-</script>
-<audio id="clickSound" src="click.mp3" preload="auto"></audio>
-<audio id="errorSound" src="error.mp3" preload="auto"></audio>
-<audio id="winSound" src="win.mp3" preload="auto"></audio>
+        updateWordList();
+        selection = [];
+        if (foundWords.length === words.length) {
+          winSound.play();
+          document.querySelectorAll(".cell").forEach(c => c.classList.add("rainbow"));
+          setTimeout(() => {
+            messageBox.innerText = winText;
+            messageBox.style.display = "block";
+          }, 650);
+        }
+      } else {
+        const matching = words.some(word =>
+          formatWord(word).join("").startsWith(selection.map(c => c.textContent).join("")));
+        if (!matching || selection.length > Math.max(...words.map(w => formatWord(w).length))) {
+          errorSound.currentTime = 0;
+          errorSound.play();
+          clearSelection(true);
+        }
+      }
+    }
 
+    // --- СТАРТ ---
+    applyTheme();
+    placeWords();
+    renderGrid();
+    updateWordList();
+    gridEl.addEventListener("click", handleClick);
+  </script>
+</body>
 </html>
