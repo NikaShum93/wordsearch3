@@ -135,37 +135,14 @@ display: grid;
   max-height: 80vh;
   overflow-y: auto;
   font-size: 18px;
+  z-index: 5;
 }
-
 /* 2) Позиционирование */
-#wordsList.bottom {
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  flex-direction: row;
-}
-#wordsList.top {
-  top: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  flex-direction: row;
-}
-#wordsList.left {
-  top: 50%;
-  left: 16px;
-  transform: translateY(-50%);
-  flex-direction: column;
-}
-#wordsList.right {
-  top: 50%;
-  right: 16px;
-  transform: translateY(-50%);
-  flex-direction: column;
-}
-#wordsList.none {
-  display: none;
-}
-
+#wordsList.bottom  { bottom: 16px; left: 50%;  transform: translateX(-50%); flex-direction: row; }
+#wordsList.top     { top: 16px;    left: 50%;  transform: translateX(-50%); flex-direction: row; }
+#wordsList.left    { top: 50%;     left: 16px; transform: translateY(-50%); flex-direction: column; }
+#wordsList.right   { top: 50%;     right: 16px;transform: translateY(-50%); flex-direction: column; }
+#wordsList.none    { display: none; }
 /* 3) Стили для элементов списка */
 #wordsList li {
   margin-bottom: 9px;
@@ -230,6 +207,7 @@ display: grid;
       100% { opacity: 0; transform: translate(var(--tx,0), var(--ty,0)) scale(0.2);}
     }
 #gridArea {
+  position: relative;
   display: flex;
   gap: 20px;
 }
