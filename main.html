@@ -105,7 +105,7 @@
     <div id="game">
       <div id="grid"></div>
       <div id="messageBox"></div>
-    </div>
+    <ul id="wordsList"></ul>$1
   </div>
   <script>
     const urlParams = new URLSearchParams(location.search);
@@ -210,7 +210,89 @@
     }
 
     placeWords();
-    renderGrid();
+renderGrid();
+updateWordList();
+
+// --- ВЗАИМОДЕЙСТВИЕ ---
+let selection = [];
+let foundWords = [];
+
+function checkLine() {
+  if (selection.length < 2) return false;
+  const first = selection[0];
+  const last = selection[selection.length - 1];
+  const dx = last.dataset.x - first.dataset.x;
+  const dy = last.dataset.y - first.dataset.y;
+  return (dx === 0 || dy === 0 || Math.abs(dx) === Math.abs(dy));
+}
+
+function clearSelection(error = false) {
+  selection.forEach(cell => {
+    cell.classList.remove("selected");
+    if (error) {
+      cell.classList.add("error");
+      setTimeout(() => cell.classList.remove("error"), 350);
+    }
+  });
+  selection = [];
+}
+
+function updateWordList() {
+  const list = document.getElementById("wordsList");
+  list.innerHTML = "";
+  words.forEach(word => {
+    const li = document.createElement("li");
+    const formatted = formatWord(word).join("");
+    li.textContent = formatted;
+    if (foundWords.includes(formatted)) li.classList.add("found");
+    list.appendChild(li);
+  });
+}
+
+const clickSound = document.getElementById("clickSound");
+const errorSound = document.getElementById("errorSound");
+const winSound = document.getElementById("winSound");
+
+clickSound.volume = 1.0;
+errorSound.volume = 1.0;
+winSound.volume = 0.8;
+
+gridEl.addEventListener("click", (e) => {
+  if (!e.target.classList.contains("cell")) return;
+  const cell = e.target;
+  if (selection.includes(cell)) return;
+
+  clickSound.currentTime = 0;
+  clickSound.play();
+  cell.classList.add("selected");
+  selection.push(cell);
+
+  const selectedWord = selection.map(c => c.textContent).join("");
+  const formattedWords = words.map(w => formatWord(w).join(""));
+
+  if (formattedWords.includes(selectedWord) && checkLine()) {
+    selection.forEach(c => {
+      c.classList.add("correct");
+      c.classList.remove("selected");
+    });
+    foundWords.push(selectedWord);
+    clearSelection();
+    if (foundWords.length === words.length) {
+      winSound.play();
+      showWinMessage();
+    }
+  } else {
+    const matching = formattedWords.some(word => word.startsWith(selectedWord));
+    if (!matching || selection.length > Math.max(...formattedWords.map(w => w.length))) {
+      errorSound.currentTime = 0;
+      errorSound.play();
+      clearSelection(true);
+    }
+  }
+});
   </script>
-</body>
+<audio id="clickSound" src="click.mp3" preload="auto"></audio>
+<audio id="errorSound" src="error.mp3" preload="auto"></audio>
+<audio id="winSound" src="win.mp3" preload="auto"></audio>
+$1
 </html>
