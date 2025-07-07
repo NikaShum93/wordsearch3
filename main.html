@@ -257,6 +257,17 @@ if (wordsListPosition === "none") {
   wordsListEl.style.display = "none";
 } else {
   wordsListEl.style.display = "";
+  // Меняем направление флекса для gridArea
+  if (wordsListPosition === "right") {
+    gridArea.style.flexDirection = "row";
+  } else if (wordsListPosition === "left") {
+    gridArea.style.flexDirection = "row-reverse";
+  } else if (wordsListPosition === "top") {
+    gridArea.style.flexDirection = "column-reverse";
+  } else if (wordsListPosition === "bottom") {
+    gridArea.style.flexDirection = "column";
+  }
+  // Меняем направление у самого списка
   if (wordsListPosition === "top" || wordsListPosition === "bottom") {
     wordsListEl.style.flexDirection = "row";
   } else {
@@ -280,23 +291,30 @@ if (wordsListPosition === "none") {
     const alphabetSet = alphabets[alphabet] || alphabets.latin;
     const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(""));
 
-    const gridEl = document.getElementById("grid");
-    const wordsListEl = document.getElementById("wordsList");
-// 1. Скрываем или показываем wordsList по параметру
+   const gridEl = document.getElementById("grid");
+const wordsListEl = document.getElementById("wordsList");
+const gridArea = document.getElementById("gridArea"); // добавь, если нет
+
 if (wordsListPosition === "none") {
   wordsListEl.style.display = "none";
 } else {
   wordsListEl.style.display = "";
-  // 2. Меняем направление флекса для gridArea
   if (wordsListPosition === "right") {
     gridArea.style.flexDirection = "row";
+    wordsListEl.style.flexDirection = "column";
   } else if (wordsListPosition === "left") {
     gridArea.style.flexDirection = "row-reverse";
+    wordsListEl.style.flexDirection = "column";
   } else if (wordsListPosition === "top") {
     gridArea.style.flexDirection = "column-reverse";
+    wordsListEl.style.flexDirection = "row";
   } else if (wordsListPosition === "bottom") {
     gridArea.style.flexDirection = "column";
+    wordsListEl.style.flexDirection = "row";
   }
+}
+wordsListEl.classList.remove("bottom", "top", "left", "right", "none");
+wordsListEl.classList.add(wordsListPosition);
   // 3. Стили для списка
   if (wordsListPosition === "top" || wordsListPosition === "bottom") {
     wordsListEl.style.flexDirection = "row";
@@ -522,7 +540,8 @@ function removeAccidental(word, intendedStart, intendedDir) {
         sparkle.style.top = y + 'px';
         const angle = Math.random() * 2 * Math.PI;
         const dist = 21 + Math.random() * 18;
-        sparkle.style.setProperty('--tx', ${Math.cos(angle)*dist}px);
+sparkle.style.setProperty('--tx', `${Math.cos(angle)*dist}px`);
+sparkle.style.setProperty('--ty', `${Math.sin(angle)*dist}px`);
         sparkle.style.setProperty('--ty', ${Math.sin(angle)*dist}px);
         setTimeout(() => sparkle.remove(), 830 + Math.random()*120);
         container.appendChild(sparkle);
@@ -612,8 +631,6 @@ function removeAccidental(word, intendedStart, intendedDir) {
    // --- СТАРТ ---
 applyTheme();
 
-const container   = document.getElementById("container");
-const gridArea    = document.getElementById("gridArea");
 + // удаляем все старые классы позиционирования у <ul>
 wordsListEl.classList.remove("bottom", "top", "left", "right", "none");
 + // вешаем класс из URL
