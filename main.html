@@ -482,29 +482,6 @@ const wordsListPosition = urlParams.get("wordsListPosition") || "right";
           c.classList.remove("selected");
         });
         foundWords.push(selectedWord);
-const container = document.getElementById("container");
-const list = document.getElementById("wordsList");
-
-if (wordsListPosition !== "none") {
-  container.classList.remove("words-left", "words-right", "words-top", "words-bottom", "words-none");
-  list.classList.remove("hidden");
-
-  // Убираем старые направления
-  container.classList.remove("column-direction", "row-direction");
-
-  // Устанавливаем направление в зависимости от позиции списка
-  if (["top", "bottom"].includes(wordsListPosition)) {
-    container.classList.add("column-direction");
-  } else {
-    container.classList.add("row-direction");
-  }
-
-  container.classList.add("words-" + wordsListPosition);
-} else {
-  list.classList.add("hidden");
-  container.classList.add("words-none");
-}
-
 // Обновляем список слов и сбрасываем выделение
 updateWordList();
 selection = [];
@@ -531,6 +508,30 @@ if (foundWords.length === words.length) {
 }
     // --- СТАРТ ---
     applyTheme();
+// --- СТАРТ ---
+applyTheme();
+
+// ⬇️ ВСТАВЬ ЗДЕСЬ ЭТО
+const container = document.getElementById("container");
+const list = document.getElementById("wordsList");
+
+if (wordsListPosition !== "none") {
+  container.classList.remove("words-left", "words-right", "words-top", "words-bottom", "words-none");
+  list.classList.remove("hidden");
+
+  container.classList.remove("column-direction", "row-direction");
+
+  if (["top", "bottom"].includes(wordsListPosition)) {
+    container.classList.add("column-direction");
+  } else {
+    container.classList.add("row-direction");
+  }
+
+  container.classList.add("words-" + wordsListPosition);
+} else {
+  list.classList.add("hidden");
+  container.classList.add("words-none");
+}
     placeWords();
     renderGrid();
     updateWordList();
