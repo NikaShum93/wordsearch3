@@ -104,7 +104,6 @@
   box-shadow: 0 0 12px var(--main-color), 0 0 28px var(--main-color);
 }
 
-  @keyframes rainbowGlow {
 @keyframes rainbowGlow {
   0%   { box-shadow: 0 0 12px #ff0088; }
   25%  { box-shadow: 0 0 12px #00ffff; }
@@ -153,63 +152,6 @@
       background: #aaffc66a;
       border-color: #8eeabd;
     }
-/* Позиции списка слов */
-.words-left {
-  order: -1;
-  margin-right: 20px;
-  flex-direction: row;
-}
-.words-right {
-  order: 1;
-  margin-left: 20px;
-  flex-direction: row;
-}
-.words-top {
-  order: -1;
-  margin-bottom: 15px;
-  flex-direction: column;
-}
-.words-bottom {
-  order: 2;
-  margin-top: 15px;
-  flex-direction: column-reverse;
-}
-.words-none #wordsList {
-  display: none !important;
-}
-/* Управление направлением флекс-контейнера */
-.column-direction {
-  flex-direction: column;
-}
-.row-direction {
-  flex-direction: row;
-}
-
-/* Дополнительные стили для списка слов */
-.words-left #wordsList {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.words-right #wordsList {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-}
-
-.words-top #wordsList,
-.words-bottom #wordsList {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-}
-
-}
     #messageBox {
       position: absolute;
       top: 40%;
@@ -247,10 +189,20 @@
       90% { opacity: 0.8;}
       100% { opacity: 0; transform: translate(var(--tx,0), var(--ty,0)) scale(0.2);}
     }
+#gridArea {
+  display: flex;
+  gap: 20px;
+}
+
+/* Позиции списка слов */
+.words-left   #gridArea { flex-direction: row-reverse; }
+.words-right  #gridArea { flex-direction: row; }
+.words-top    #gridArea { flex-direction: column; }
+.words-bottom #gridArea { flex-direction: column-reverse; }
   </style>
 </head>
 <body>
- <div id="container">
+<div id="container">
   <div id="game">
     <div id="gridArea">
       <div id="grid"></div>
@@ -271,7 +223,7 @@
     const level = urlParams.get("level") || "medium";
     const caseType = urlParams.get("case") || "uppercase";
     const style = urlParams.get("style") || "neon";
-const neon = urlParams.get("neon") === "1";
+const neon  = urlParams.get("neon") === "1" || style === "neon";
 const neonColor = "#" + (urlParams.get("neonColor") || "00ffff");
 const gridSize = parseInt(urlParams.get("gridSize") || "10");
 const textColorParam = urlParams.get("textColor");
@@ -530,26 +482,10 @@ const wordsListPosition = urlParams.get("wordsListPosition") || "right";
 applyTheme();
 
 const container = document.getElementById("container");
-const list = document.getElementById("wordsList");
+const gridArea = document.getElementById("gridArea");
 
-if (wordsListPosition !== "none") {
-  container.classList.remove("words-left", "words-right", "words-top", "words-bottom", "words-none");
-  list.classList.remove("hidden");
-
-  container.classList.remove("column-direction", "row-direction");
-
-  if (["top", "bottom"].includes(wordsListPosition)) {
-    container.classList.add("column-direction");
-  } else {
-    container.classList.add("row-direction");
-  }
-
-  container.classList.add("words-" + wordsListPosition);
-} else {
-  list.classList.add("hidden");
-  container.classList.add("words-none");
-}
-
+container.classList.remove("words-left", "words-right", "words-top", "words-bottom", "words-none");
+container.classList.add("words-" + wordsListPosition);
 placeWords();
 renderGrid();
 updateWordList();
