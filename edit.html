@@ -188,54 +188,68 @@
   </div>
 
   <script>
-    function generateIframe() {
-      const wordsRaw = document.getElementById('words').value;
-      const alphabet = document.getElementById('alphabet').value;
-      const letterCase = document.getElementById('case').value;
-      const level = document.getElementById('level').value;
-      const style = 'neon'; // пока фиксированный стиль
-      const winText = encodeURIComponent(document.getElementById('winText').value.trim());
-      const sparkles = document.getElementById('sparkles').checked ? 1 : 0;
-      const bgColor = document.getElementById('bgColor').value.slice(1);
-      const borderColor = document.getElementById('borderColor').value.slice(1);
-      const gridSize = parseInt(document.getElementById('gridSize').value);
+  function generateIframe() {
+    const wordsRaw = document.getElementById('words').value;
+    const alphabet = document.getElementById('alphabet').value;
+    const letterCase = document.getElementById('case').value;
+    const level = document.getElementById('level').value;
+    const winText = encodeURIComponent(document.getElementById('winText').value.trim());
 
-      const wordsList = wordsRaw.split(/[\n,]+/).map(w => w.trim()).filter(w => w);
-      const longestWord = wordsList.reduce((max, w) => Math.max(max, w.length), 0);
+    const style = document.getElementById('style')?.value || 'light';
+    const neon = document.getElementById('neon')?.checked ? 1 : 0;
+    const neonColor = document.getElementById('neonColor')?.value?.slice(1) || '00ffff';
+    const sparkles = document.getElementById('sparkles')?.checked ? 1 : 0;
+    const bgColor = document.getElementById('bgColor')?.value?.slice(1) || 'f8fdff';
+    const borderColor = document.getElementById('borderColor')?.value?.slice(1) || '00ccff';
+    const textColor = document.getElementById('textColor')?.value?.slice(1) || '00ffff';
+    const gridSize = parseInt(document.getElementById('gridSize')?.value || 10);
+    const wordsListPosition = document.getElementById('wordsListPosition')?.value || 'bottom';
 
-      if (longestWord > gridSize) {
-        alert(`Слово "${wordsList.find(w => w.length === longestWord)}" слишком длинное для грида ${gridSize}x${gridSize}.\nУвеличьте размер грида или уберите слово.`);
-        return;
-      }
+    const wordsList = wordsRaw.split(/[\n,]+/).map(w => w.trim()).filter(w => w);
+    const longestWord = wordsList.reduce((max, w) => Math.max(max, w.length), 0);
 
-      const params = new URLSearchParams({
-        words: wordsList.join(','),
-        alphabet,
-        case: letterCase,
-        level,
-        style,
-        winText,
-        sparkles,
-        bgColor,
-        borderColor,
-        gridSize
-      });
-
-      document.getElementById('resultBox').value =
-        `<iframe src="https://nikashum93.github.io/wordsearch/main.html?${params.toString()}" width="960" height="540" frameborder="0" allowfullscreen></iframe>`;
+    if (longestWord > gridSize) {
+      alert(`Слово "${wordsList.find(w => w.length === longestWord)}" слишком длинное для грида ${gridSize}x${gridSize}.\nУвеличьте размер грида или уберите слово.`);
+      return;
     }
 
-    function copyIframe() {
-      const el = document.getElementById('resultBox');
-      el.select();
-      document.execCommand('copy');
-    }
+    const params = new URLSearchParams({
+      words: wordsList.join(','),
+      alphabet,
+      case: letterCase,
+      level,
+      winText,
+      style,
+      neon,
+      neonColor,
+      sparkles,
+      bgColor,
+      borderColor,
+      textColor,
+      gridSize,
+      wordsListPosition
+    });
 
-    document.querySelectorAll('textarea, select, input[type="text"], input[type="checkbox"], input[type="color"]').forEach(el =>
-      el.addEventListener('input', generateIframe)
-    );
+    const iframeURL = `https://nikashum93.github.io/wordsearch3/main.html?${params.toString()}`;
 
-    window.onload = generateIframe;
-  </script>
+    document.getElementById('resultBox').value =
+      `<iframe src="${iframeURL}" width="960" height="540" frameborder="0" allowfullscreen></iframe>`;
+
+    const preview = document.getElementById('previewFrame');
+    if (preview) preview.src = iframeURL;
+  }
+
+  function copyIframe() {
+    const el = document.getElementById('resultBox');
+    el.select();
+    document.execCommand('copy');
+  }
+
+  document.querySelectorAll('textarea, select, input[type="text"], input[type="checkbox"], input[type="color"]').forEach(el =>
+    el.addEventListener('input', generateIframe)
+  );
+
+  window.onload = generateIframe;
+</script>
 </body>
 </html>
