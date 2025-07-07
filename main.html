@@ -466,52 +466,53 @@ const wordsListPosition = urlParams.get("wordsListPosition") || "right";
       selection = [];
     }
 
-    function handleClick(e) {
-      if (!e.target.classList.contains("cell")) return;
-      const cell = e.target;
-      clickSound.currentTime = 0;
-      clickSound.play();
-      // Запрет двойного выбора одной буквы в текущем выделении
-      if (selection.includes(cell)) return;
-      cell.classList.add("selected");
-      selection.push(cell);
-      const selectedWord = selection.map(c => c.textContent).join("");
-      if (words.map(w => formatWord(w).join("")).includes(selectedWord) && checkLine()) {
-        selection.forEach(c => {
-          c.classList.add("correct");
-          c.classList.remove("selected");
-        });
-        foundWords.push(selectedWord);
-// Обновляем список слов и сбрасываем выделение
-updateWordList();
-selection = [];
+   function handleClick(e) {
+  if (!e.target.classList.contains("cell")) return;
+  const cell = e.target;
+  clickSound.currentTime = 0;
+  clickSound.play();
+  if (selection.includes(cell)) return;
 
-if (foundWords.length === words.length) {
-  winSound.play();
-  document.querySelectorAll(".cell").forEach(c => c.classList.add("rainbow", "glim"));
-  setTimeout(() => {
-    messageBox.innerText = winText;
-    messageBox.style.display = "block";
-  }, 650);
-} else {
-  const matching = words.some(word =>
-    formatWord(word).join("").startsWith(selection.map(c => c.textContent).join(""))
-  );
-  if (
-    !matching ||
-    selection.length > Math.max(...words.map(w => formatWord(w).length))
-  ) {
-    errorSound.currentTime = 0;
-    errorSound.play();
-    clearSelection(true);
+  cell.classList.add("selected");
+  selection.push(cell);
+
+  const selectedWord = selection.map(c => c.textContent).join("");
+
+  if (words.map(w => formatWord(w).join("")).includes(selectedWord) && checkLine()) {
+    selection.forEach(c => {
+      c.classList.add("correct");
+      c.classList.remove("selected");
+    });
+    foundWords.push(selectedWord);
+    updateWordList();
+    selection = [];
+
+    if (foundWords.length === words.length) {
+      winSound.play();
+      document.querySelectorAll(".cell").forEach(c => c.classList.add("rainbow", "glim"));
+      setTimeout(() => {
+        messageBox.innerText = winText;
+        messageBox.style.display = "block";
+      }, 650);
+    }
+  } else {
+    const matching = words.some(word =>
+      formatWord(word).join("").startsWith(selection.map(c => c.textContent).join(""))
+    );
+    if (
+      !matching ||
+      selection.length > Math.max(...words.map(w => formatWord(w).length))
+    ) {
+      errorSound.currentTime = 0;
+      errorSound.play();
+      clearSelection(true);
+    }
   }
 }
-    // --- СТАРТ ---
-    applyTheme();
-// --- СТАРТ ---
+
+   // --- СТАРТ ---
 applyTheme();
 
-// ⬇️ ВСТАВЬ ЗДЕСЬ ЭТО
 const container = document.getElementById("container");
 const list = document.getElementById("wordsList");
 
@@ -532,10 +533,12 @@ if (wordsListPosition !== "none") {
   list.classList.add("hidden");
   container.classList.add("words-none");
 }
-    placeWords();
-    renderGrid();
-    updateWordList();
-    gridEl.addEventListener("click", handleClick);
+
+placeWords();
+renderGrid();
+updateWordList();
+gridEl.addEventListener("click", handleClick);
+
   </script>
 </body>
 </html>
