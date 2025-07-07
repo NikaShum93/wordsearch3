@@ -23,7 +23,8 @@
       align-items: center;
     }
 #grid {
-  display: grid;
+ position: relative;   
+display: grid;
   grid-template-columns: repeat(var(--n), 44px);
   grid-auto-rows: 44px;
   gap: 7px;
@@ -45,15 +46,7 @@
       position: relative;
     }
 
-    #grid {
-      display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      gap: 7px;
-      background: transparent;
-      margin-bottom: 8px;
-    }
-
-    .cell {
+       .cell {
       position: relative;
       width: 44px; height: 44px;
       background: var(--cell-bg);
@@ -162,19 +155,27 @@
       position: absolute;
       top: 40%;
       left: 50%;
+opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s, transform .3s;
       transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.82);
+      background: var(--cell-bg);
       padding: 34px 60px;
       border-radius: 20px;
-      border: 3px solid var(--main-color);
-      color: var(--main-color);
+      border: 2px solid var(--border-color);
+      color: var(--text-color);
       font-size: 26px;
       font-weight: bold;
       text-align: center;
-      display: none;
+      display: block;;
       z-index: 10;
-      box-shadow: 0 0 28px #0ff8;
+      box-shadow: 0 0 12px var(--main-color);
     }
+#messageBox.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%,-50%) scale(1);
+}
 /* Необязательный ховер для скрытого списка */
 #wordsList.hidden {
   display: none;
@@ -454,7 +455,16 @@ const wordsListPosition = urlParams.get("wordsListPosition") || "right";
     selection.forEach(c => {
       c.classList.add("correct");
       c.classList.remove("selected");
-    });
+
+  if (sparklesOn) {
+    // вычисляем координаты центра ячейки относительно #grid
+    const cellRect   = c.getBoundingClientRect();
+    const gridRect   = gridEl.getBoundingClientRect();
+    const x = cellRect.left - gridRect.left + c.clientWidth/2;
+    const y = cellRect.top  - gridRect.top  + c.clientHeight/2;
+    createSparkles(x, y, gridEl);
+  }
+});
     foundWords.push(selectedWord);
     updateWordList();
     selection = [];
@@ -463,11 +473,7 @@ const wordsListPosition = urlParams.get("wordsListPosition") || "right";
       winSound.play();
       document.querySelectorAll(".cell").forEach(c => c.classList.add("rainbow", "glim"));
       setTimeout(() => {
-        messageBox.innerText = winText;
-        messageBox.style.display = "block";
- messageBox.style.color = textColor;
-  messageBox.style.borderColor = borderColor;
-  messageBox.style.boxShadow = `0 0 28px ${borderColor}`;
+     messageBox.classList.add("show");
       }, 650);
     }
   } else {
