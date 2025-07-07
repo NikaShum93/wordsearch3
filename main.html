@@ -122,7 +122,7 @@ display: grid;
 }
     /* 1) Базовый стиль списка */
 #wordsList {
-  position: absolute;
+  position:  static;
   display: flex;
   list-style: none;
   margin: 0;
@@ -207,9 +207,11 @@ display: grid;
       100% { opacity: 0; transform: translate(var(--tx,0), var(--ty,0)) scale(0.2);}
     }
 #gridArea {
+   display: flex;
+  gap: 36px; /* увеличь расстояние при необходимости */
+  align-items: center;
+  justify-content: center;
   position: relative;
-  display: flex;
-  gap: 20px;
 }
   </style>
 </head>
@@ -248,6 +250,18 @@ const borderColor = borderColorParam?.startsWith("rgba") ? borderColorParam : "#
 const bgColorParam = urlParams.get("bgColor");
 const bgColor = bgColorParam?.startsWith("rgba") ? bgColorParam : "#" + (bgColorParam || "ffffff");
 const wordsListPosition = urlParams.get("wordsListPosition") || "right";
+// Меняем flex-направление для gridArea в зависимости от позиции списка
+if (wordsListPosition === "right") {
+  gridArea.style.flexDirection = "row";
+} else if (wordsListPosition === "left") {
+  gridArea.style.flexDirection = "row-reverse";
+} else if (wordsListPosition === "top") {
+  gridArea.style.flexDirection = "column-reverse";
+} else if (wordsListPosition === "bottom") {
+  gridArea.style.flexDirection = "column";
+} else if (wordsListPosition === "none") {
+  wordsListEl.style.display = "none";
+}
     const sparklesOn = urlParams.get("sparkles") === "1";
     const alphabet = urlParams.get("alphabet") || "latin";
 
