@@ -105,11 +105,12 @@
 }
 
   @keyframes rainbowGlow {
-  0%   { box-shadow: 0 0 12px #ff0088; color: #ff0088; }
-  25%  { box-shadow: 0 0 12px #00ffff; color: #00ffff; }
-  50%  { box-shadow: 0 0 12px #00ff55; color: #00ff55; }
-  75%  { box-shadow: 0 0 12px #ffaa00; color: #ffaa00; }
-  100% { box-shadow: 0 0 12px #ff0088; color: #ff0088; }
+@keyframes rainbowGlow {
+  0%   { box-shadow: 0 0 12px #ff0088; }
+  25%  { box-shadow: 0 0 12px #00ffff; }
+  50%  { box-shadow: 0 0 12px #00ff55; }
+  75%  { box-shadow: 0 0 12px #ffaa00; }
+  100% { box-shadow: 0 0 12px #ff0088; }
 }
 @keyframes grid-glim {
   0%   { box-shadow: 0 0 12px red; }
@@ -185,10 +186,18 @@
 }
 
 /* Дополнительные стили для списка слов */
-.words-left #wordsList,
+.words-left #wordsList {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
 .words-right #wordsList {
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
 }
 
 .words-top #wordsList,
@@ -198,6 +207,8 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
+}
+
 }
     #messageBox {
       position: absolute;
@@ -239,13 +250,15 @@
   </style>
 </head>
 <body>
-  <div id="container">
-    <div id="game">
+ <div id="container">
+  <div id="game">
+    <div id="gridArea">
       <div id="grid"></div>
-      <div id="messageBox"></div>
+      <ul id="wordsList"></ul>
     </div>
-    <ul id="wordsList"></ul>
+    <div id="messageBox"></div>
   </div>
+</div>
   <!-- Звуки -->
   <audio id="clickSound" src="https://nikashum93.github.io/wordsearch/click.mp3" preload="auto"></audio>
   <audio id="errorSound" src="https://nikashum93.github.io/wordsearch/error.mp3" preload="auto"></audio>
@@ -493,6 +506,9 @@ const wordsListPosition = urlParams.get("wordsListPosition") || "right";
       setTimeout(() => {
         messageBox.innerText = winText;
         messageBox.style.display = "block";
+ messageBox.style.color = textColor;
+  messageBox.style.borderColor = borderColor;
+  messageBox.style.boxShadow = `0 0 28px ${borderColor}`;
       }, 650);
     }
   } else {
