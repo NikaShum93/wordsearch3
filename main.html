@@ -180,6 +180,27 @@
       z-index: 10;
       box-shadow: 0 0 28px #0ff8;
     }
+/* Layout по сторонам */
+.words-left {
+  flex-direction: row;
+}
+.words-right {
+  flex-direction: row-reverse;
+}
+.words-top {
+  flex-direction: column;
+}
+.words-bottom {
+  flex-direction: column-reverse;
+}
+.words-none #wordsList {
+  display: none;
+}
+
+/* Необязательный ховер для скрытого списка */
+#wordsList.hidden {
+  display: none;
+}
     /* Sparkles */
     .sparkle {
       position: absolute;
@@ -427,10 +448,18 @@ if (wordsListPosition !== "none") {
 
   if (wordsListPosition === "top" || wordsListPosition === "bottom") {
     const container = document.getElementById("container");
-    container.style.flexDirection = "column";
-    if (wordsListPosition === "top") container.prepend(list);
-    else container.appendChild(list);
-  }
+const list = document.getElementById("wordsList");
+
+container.classList.remove("words-left", "words-right", "words-top", "words-bottom", "words-none");
+list.classList.remove("hidden");
+
+if (wordsListPosition === "none") {
+  list.classList.add("hidden");
+  container.classList.add("words-none");
+} else {
+  container.classList.add("words-" + wordsListPosition);
+}
+  
 } else {
   document.getElementById("wordsList").style.display = "none";
 }
