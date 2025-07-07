@@ -120,61 +120,98 @@ display: grid;
 .neon .cell {
   box-shadow: 0 0 12px var(--main-color), 0 0 28px var(--main-color);
 }
-    #wordsList {
-      list-style: none;
-      padding: 8px;
-      border-radius: 13px;
-      border: none;
-      background: none; 
-      min-width: 110px;
-      max-width: 170px;
-      max-height: 80vh;
-      overflow-y: auto;
-      font-size: 18px;
-    }
+    /* 1) Базовый стиль списка */
+#wordsList {
+  position: absolute;
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  gap: 12px;
+  border-radius: 13px;
+  background: none;
+  min-width: 110px;
+  max-width: 170px;
+  max-height: 80vh;
+  overflow-y: auto;
+  font-size: 18px;
+}
 
-    #wordsList li {
-      margin-bottom: 9px;
-      padding: 6px 8px;
-      border: 2px solid var(--border-color);
-      border-radius: 6px;
-      text-align: center;
-      font-size: 18px;
-      background: var(--cell-bg);
-      color: var(--text-color);
-      transition: background 0.2s;
-    }
+/* 2) Позиционирование */
+#wordsList.bottom {
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-direction: row;
+}
+#wordsList.top {
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-direction: row;
+}
+#wordsList.left {
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  flex-direction: column;
+}
+#wordsList.right {
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  flex-direction: column;
+}
+#wordsList.none {
+  display: none;
+}
 
-    #wordsList li.found {
-      text-decoration: line-through;
-      color: #888;
-      background: #aaffc66a;
-      border-color: #8eeabd;
-    }
-    #messageBox {
-      position: absolute;
-      top: 40%;
-      left: 50%;
-opacity: 0;
+/* 3) Стили для элементов списка */
+#wordsList li {
+  margin-bottom: 9px;
+  padding: 6px 8px;
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  text-align: center;
+  background: var(--cell-bg);
+  color: var(--text-color);
+  transition: background 0.2s;
+}
+#wordsList li.found {
+  text-decoration: line-through;
+  color: #888;
+  background: #aaffc66a;
+  border-color: #8eeabd;
+}
+
+/* 4) Сообщение о победе */
+#messageBox {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  opacity: 0;
   pointer-events: none;
   transition: opacity .3s, transform .3s;
-      transform: translate(-50%, -50%) scale(0.8);
-      background: var(--cell-bg);
-      padding: 34px 60px;
-      border-radius: 20px;
-      border: 2px solid var(--border-color);
-      color: var(--text-color);
-      font-size: 26px;
-      font-weight: bold;
-      text-align: center;
-      z-index: 10;
-      box-shadow: 0 0 12px var(--main-color);
-    }
+  transform: translate(-50%, -50%) scale(0.8);
+  background: var(--cell-bg);
+  padding: 34px 60px;
+  border-radius: 20px;
+  border: 2px solid var(--border-color);
+  color: var(--text-color);
+  font-size: 26px;
+  font-weight: bold;
+  text-align: center;
+  z-index: 10;
+  box-shadow: 0 0 12px var(--main-color);
+}
 #messageBox.show {
   opacity: 1;
   pointer-events: auto;
   transform: translate(-50%,-50%) scale(1);
 }
+
+/* Sparkles и остальное без изменений */
+
 /* Необязательный ховер для скрытого списка */
 #wordsList.hidden {
   display: none;
@@ -570,11 +607,12 @@ function removeAccidental(word, intendedStart, intendedDir) {
    // --- СТАРТ ---
 applyTheme();
 
-const container = document.getElementById("container");
-const gridArea = document.getElementById("gridArea");
-
-container.classList.remove("words-left", "words-right", "words-top", "words-bottom", "words-none");
-container.classList.add("words-" + wordsListPosition);
+const container   = document.getElementById("container");
+const gridArea    = document.getElementById("gridArea");
++ // удаляем все старые классы позиционирования у <ul>
+wordsListEl.classList.remove("bottom", "top", "left", "right", "none");
++ // вешаем класс из URL
+wordsListEl.classList.add(wordsListPosition);
 placeWords();
 
 renderGrid();
