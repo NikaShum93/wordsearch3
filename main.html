@@ -95,8 +95,10 @@
     .cell.rainbow {
       animation: rainbow-glow 2.1s linear infinite;
   background: transparent !important;
-
     }
+.neon .cell {
+  box-shadow: 0 0 12px var(--main-color), 0 0 28px var(--main-color);
+}
 
     @keyframes rainbow-glow {
       0%   { text-shadow: 0 0 20px #ff00c8, 0 0 30px #fff7; }
@@ -106,7 +108,9 @@
       80%  { text-shadow: 0 0 20px #b666ff, 0 0 30px #fff7; }
       100% { text-shadow: 0 0 20px #ff00c8, 0 0 30px #fff7; }
     }
-
+.neon .cell {
+  box-shadow: 0 0 12px var(--main-color), 0 0 28px var(--main-color);
+}
     #wordsList {
       list-style: none;
       padding: 10px 12px;
@@ -241,6 +245,8 @@
     const level = urlParams.get("level") || "medium";
     const caseType = urlParams.get("case") || "uppercase";
     const style = urlParams.get("style") || "neon";
+const neon = urlParams.get("neon") === "1";
+const neonColor = "#" + (urlParams.get("neonColor") || "00ffff");
 const gridSize = parseInt(urlParams.get("gridSize") || "10");
 const textColor = urlParams.get("textColor") || "#00ffff";
 const borderColor = urlParams.get("borderColor") || "#00ffff";
@@ -278,16 +284,33 @@ const wordsListPosition = urlParams.get("wordsListPosition") || "right";
 
     // --- ТЕМА/СТИЛЬ ---
     function applyTheme() {
-      let color = "#00ffff";
-      let font = "'Orbitron', Arial, sans-serif";
-      if (style === "neon") color = "#00ffff";
-      if (style === "rainbow") color = "#ff00c8";
-      document.documentElement.style.setProperty('--main-color', color);
-      document.documentElement.style.setProperty('--cell-font', font);
-      document.documentElement.style.setProperty('--text-color', textColor);
-      document.documentElement.style.setProperty('--border-color', borderColor);
-      document.documentElement.style.setProperty('--cell-bg', bgColor);
-    }
+  let color = "#00ffff";
+  let font = "'Orbitron', Arial, sans-serif";
+
+  if (style === "kids") {
+    font = "'Comic Neue', 'Fredoka One', Arial, sans-serif";
+  }
+
+  if (style === "rainbow") {
+    color = "#ff00c8";
+  }
+
+  if (style === "light") {
+    color = "#000000";
+  }
+
+  document.documentElement.style.setProperty('--main-color', color);
+  document.documentElement.style.setProperty('--text-color', textColor);
+  document.documentElement.style.setProperty('--border-color', borderColor);
+  document.documentElement.style.setProperty('--cell-bg', bgColor);
+  document.documentElement.style.setProperty('--cell-font', font);
+
+  if (neon) {
+    document.body.classList.add("neon");
+    document.documentElement.style.setProperty('--main-color', neonColor);
+  }
+}
+
 
     // --- РЕГИСТР ---
     function formatLetter(letter) {
@@ -442,15 +465,16 @@ const wordsListPosition = urlParams.get("wordsListPosition") || "right";
         });
         foundWords.push(selectedWord);
 if (wordsListPosition !== "none") {
-   if (wordsListPosition === "top" || wordsListPosition === "bottom") {
-    const container = document.getElementById("container");
-const list = document.getElementById("wordsList");
+  const container = document.getElementById("container");
+  const list = document.getElementById("wordsList");
 
-container.classList.remove("words-left", "words-right", "words-top", "words-bottom", "words-none");
-list.classList.remove("hidden");
-
-}
-        updateWordList();
+  container.classList.remove("words-left", "words-right", "words-top", "words-bottom", "words-none");
+  list.classList.remove("hidden");
+  container.classList.add("words-" + wordsListPosition);
+} else {
+  document.getElementById("wordsList").classList.add("hidden");
+  document.getElementById("container").classList.add("words-none");
+}        updateWordList();
 
         selection = [];
         if (foundWords.length === words.length) {
