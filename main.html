@@ -95,8 +95,8 @@
 
     /* Радужное свечение (для ячеек в стиле "rainbow") */
     .cell.rainbow {
-      animation: rainbow-glow 2.1s linear infinite;
-background: var(--cell-bg) !important;    }
+  animation: rainbowGlow 2.5s linear infinite;
+}
 .cell.glim {
   animation: grid-glim 2.5s infinite;
 }
@@ -104,14 +104,13 @@ background: var(--cell-bg) !important;    }
   box-shadow: 0 0 12px var(--main-color), 0 0 28px var(--main-color);
 }
 
-    @keyframes rainbow-glow {
-      0%   { text-shadow: 0 0 20px #ff00c8, 0 0 30px #fff7; }
-      20%  { text-shadow: 0 0 20px #fff600, 0 0 30px #fff7; }
-      40%  { text-shadow: 0 0 20px #38ff8e, 0 0 30px #fff7; }
-      60%  { text-shadow: 0 0 20px #40c4ff, 0 0 30px #fff7; }
-      80%  { text-shadow: 0 0 20px #b666ff, 0 0 30px #fff7; }
-      100% { text-shadow: 0 0 20px #ff00c8, 0 0 30px #fff7; }
-    }
+  @keyframes rainbowGlow {
+  0%   { box-shadow: 0 0 12px #ff0088; color: #ff0088; }
+  25%  { box-shadow: 0 0 12px #00ffff; color: #00ffff; }
+  50%  { box-shadow: 0 0 12px #00ff55; color: #00ff55; }
+  75%  { box-shadow: 0 0 12px #ffaa00; color: #ffaa00; }
+  100% { box-shadow: 0 0 12px #ff0088; color: #ff0088; }
+}
 @keyframes grid-glim {
   0%   { box-shadow: 0 0 12px red; }
   25%  { box-shadow: 0 0 12px orange; }
@@ -535,7 +534,6 @@ if (foundWords.length === words.length) {
     placeWords();
     renderGrid();
     updateWordList();
-}
     gridEl.addEventListener("click", handleClick);
   </script>
 </body>
