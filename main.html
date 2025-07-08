@@ -473,6 +473,7 @@ const wordsListPosition = urlParams.get("wordsListPosition") || "right";
       winSound.play();
       document.querySelectorAll(".cell").forEach(c => c.classList.add("rainbow", "glim"));
       setTimeout(() => {
+messageBox.innerText = winText;
      messageBox.classList.add("show");
       }, 650);
     }
