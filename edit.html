@@ -221,7 +221,14 @@
     const alphabet = document.getElementById('alphabet').value;
     const letterCase = document.getElementById('case').value;
     const level = document.getElementById('level').value;
-    const winText = encodeURIComponent(document.getElementById('winText').value.trim());
+    // 1. Получаем сам <input id="winText">
+const winInput   = document.getElementById('winText');
+
+// 2. Берём либо введённый текст, либо, если пусто, текст из placeholder
+const rawWinText = winInput.value.trim() || winInput.placeholder;
+
+// 3. Кодируем получившуюся строку для URL
+const winText    = encodeURIComponent(rawWinText);
 
     const style = document.getElementById('style')?.value || 'light';
     const neon = document.getElementById('neon')?.checked ? 1 : 0;
