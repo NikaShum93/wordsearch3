@@ -120,88 +120,57 @@ display: grid;
 .neon .cell {
   box-shadow: 0 0 12px var(--main-color), 0 0 28px var(--main-color);
 }
-    /* 1) Базовый стиль списка */
-#wordsList {
-  position: absolute;
-  display: flex;
-  list-style: none;
-  margin: 0;
-  padding: 8px;
-  gap: 12px;
-  border-radius: 13px;
-  background: none;
-  min-width: 110px;
-  max-width: 170px;
-  max-height: 80vh;
-  overflow-y: auto;
-  font-size: 18px;
-  z-index: 5;
-}
-#wordsList.bottom {
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  flex-direction: row;
-}
-#wordsList.top {
-  top: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  flex-direction: row;
-}
-#wordsList.left {
-  top: 50%;
-  left: 16px;
-  transform: translateY(-50%);
-  flex-direction: column;
-}
-#wordsList.right {
-  top: 50%;
-  right: 16px;
-  transform: translateY(-50%);
-  flex-direction: column;
-}
-#wordsList.none {
-  display: none;
-}}
-/* 3) Стили для элементов списка */
-#wordsList li {
-  margin-bottom: 9px;
-  padding: 6px 8px;
-  border: 2px solid var(--border-color);
-  border-radius: 6px;
-  text-align: center;
-  background: var(--cell-bg);
-  color: var(--text-color);
-  transition: background 0.2s;
-}
-#wordsList li.found {
-  text-decoration: line-through;
-  color: #888;
-  background: #aaffc66a;
-  border-color: #8eeabd;
-}
+    #wordsList {
+      list-style: none;
+      padding: 8px;
+      border-radius: 13px;
+      border: none;
+      background: none; 
+      min-width: 110px;
+      max-width: 170px;
+      max-height: 80vh;
+      overflow-y: auto;
+      font-size: 18px;
+    }
 
-/* 4) Сообщение о победе */
-#messageBox {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  opacity: 0;
+    #wordsList li {
+      margin-bottom: 9px;
+      padding: 6px 8px;
+      border: 2px solid var(--border-color);
+      border-radius: 6px;
+      text-align: center;
+      font-size: 18px;
+      background: var(--cell-bg);
+      color: var(--text-color);
+      transition: background 0.2s;
+    }
+
+    #wordsList li.found {
+      text-decoration: line-through;
+      color: #888;
+      background: #aaffc66a;
+      border-color: #8eeabd;
+    }
+    #messageBox {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+opacity: 0;
   pointer-events: none;
   transition: opacity .3s, transform .3s;
-  transform: translate(-50%, -50%) scale(0.8);
-  background: var(--cell-bg);
-  padding: 34px 60px;
-  border-radius: 20px;
-  border: 2px solid var(--border-color);
-  color: var(--text-color);
-  font-size: 26px;
-  font-weight: bold;
-  text-align: center;
-  z-index: 10;
-  box-shadow: 0 0 12px var(--main-color);
-}
+      transform: translate(-50%, -50%);
+      background: var(--cell-bg);
+      padding: 34px 60px;
+      border-radius: 20px;
+      border: 2px solid var(--border-color);
+      color: var(--text-color);
+      font-size: 26px;
+      font-weight: bold;
+      text-align: center;
+      display: block;;
+      z-index: 10;
+      box-shadow: 0 0 12px var(--main-color);
+    }
 #messageBox.show {
   opacity: 1;
   pointer-events: auto;
@@ -228,12 +197,15 @@ display: grid;
       100% { opacity: 0; transform: translate(var(--tx,0), var(--ty,0)) scale(0.2);}
     }
 #gridArea {
-   display: flex;
-  gap: 36px; /* увеличь расстояние при необходимости */
-  align-items: center;
-  justify-content: center;
-  position: relative;
+  display: flex;
+  gap: 20px;
 }
+
+/* Позиции списка слов */
+.words-left   #gridArea { flex-direction: row-reverse; }
+.words-right  #gridArea { flex-direction: row; }
+.words-top    #gridArea { flex-direction: column; }
+.words-bottom #gridArea { flex-direction: column-reverse; }
   </style>
 </head>
 <body>
@@ -271,36 +243,7 @@ const borderColor = borderColorParam?.startsWith("rgba") ? borderColorParam : "#
 const bgColorParam = urlParams.get("bgColor");
 const bgColor = bgColorParam?.startsWith("rgba") ? bgColorParam : "#" + (bgColorParam || "ffffff");
 const wordsListPosition = urlParams.get("wordsListPosition") || "right";
-// Меняем flex-направление для gridArea в зависимости от позиции списка
-if (wordsListPosition === "right") {
-  gridArea.style.flexDirection = "row";
-} else if (wordsListPosition === "left") {
-  gridArea.style.flexDirection = "row-reverse";
-} else if (wordsListPosition === "top") {
-  gridArea.style.flexDirection = "column-reverse";
-} else if (wordsListPosition === "bottom") {
-  gridArea.style.flexDirection = "column";
-if (wordsListPosition === "none") {
-  wordsListEl.style.display = "none";
-} else {
-  wordsListEl.style.display = "";
-  // Меняем направление флекса для gridArea
-  if (wordsListPosition === "right") {
-    gridArea.style.flexDirection = "row";
-  } else if (wordsListPosition === "left") {
-    gridArea.style.flexDirection = "row-reverse";
-  } else if (wordsListPosition === "top") {
-    gridArea.style.flexDirection = "column-reverse";
-  } else if (wordsListPosition === "bottom") {
-    gridArea.style.flexDirection = "column";
-  }
-  // Меняем направление у самого списка
-  if (wordsListPosition === "top" || wordsListPosition === "bottom") {
-    wordsListEl.style.flexDirection = "row";
-  } else {
-    wordsListEl.style.flexDirection = "column";
-  }
-}    const sparklesOn = urlParams.get("sparkles") === "1";
+    const sparklesOn = urlParams.get("sparkles") === "1";
     const alphabet = urlParams.get("alphabet") || "latin";
 
     // --- АЛФАВИТЫ ---
@@ -318,29 +261,8 @@ if (wordsListPosition === "none") {
     const alphabetSet = alphabets[alphabet] || alphabets.latin;
     const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(""));
 
-   const gridEl = document.getElementById("grid");
-const wordsListEl = document.getElementById("wordsList");
-wordsListEl.classList.remove("bottom", "top", "left", "right", "none");
-wordsListEl.classList.add(wordsListPosition);}
-const gridArea = document.getElementById("gridArea"); // добавь, если нет
-if (wordsListPosition === "none") {
-  wordsListEl.style.display = "none";
-} else {
-  wordsListEl.style.display = "";
-  if (wordsListPosition === "right") {
-    gridArea.style.flexDirection = "row";
-    wordsListEl.style.flexDirection = "column";
-  } else if (wordsListPosition === "left") {
-    gridArea.style.flexDirection = "row-reverse";
-    wordsListEl.style.flexDirection = "column";
-  } else if (wordsListPosition === "top") {
-    gridArea.style.flexDirection = "column-reverse";
-    wordsListEl.style.flexDirection = "row";
-  } else if (wordsListPosition === "bottom") {
-    gridArea.style.flexDirection = "column";
-    wordsListEl.style.flexDirection = "row";
-  }
-}
+    const gridEl = document.getElementById("grid");
+    const wordsListEl = document.getElementById("wordsList");
     const messageBox = document.getElementById("messageBox");
     const clickSound = document.getElementById("clickSound");
     const errorSound = document.getElementById("errorSound");
@@ -387,122 +309,49 @@ if (wordsListPosition === "none") {
       return letter.toUpperCase();
     }
 
-    // храним, куда именно мы вставили каждое слово
-const placements = [];
-
-function placeWords() {
-  // 1) очищаем сетку
-  for (let y = 0; y < gridSize; y++) {
-    for (let x = 0; x < gridSize; x++) {
-      grid[y][x] = "";
-    }
-  }
-  placements.length = 0; // сбрасываем прошлые данные
-
-  // 2) вставляем каждое слово и запоминаем его параметры
-  for (const wordRaw of words) {
-    const word = formatWord(wordRaw);
-    let placed = false;
-
-    for (let attempt = 0; attempt < 120; attempt++) {
-      const dirOptions = {
-        easy:   [[1,0],[0,1]],
-        medium: [[1,0],[0,1],[1,1]],
-        hard:   [[1,0],[0,1],[1,1],[-1,1],[1,-1],[0,-1],[-1,0],[-1,-1]]
-      }[level];
-
-      const [dx, dy] = dirOptions[Math.floor(Math.random() * dirOptions.length)];
-      const x = Math.floor(Math.random() * gridSize);
-      const y = Math.floor(Math.random() * gridSize);
-
-      let fits = true;
-      for (let i = 0; i < word.length; i++) {
-        const nx = x + dx * i, ny = y + dy * i;
-        if (nx < 0 || ny < 0 || nx >= gridSize || ny >= gridSize) { fits = false; break; }
-        if (grid[ny][nx] && grid[ny][nx] !== word[i]) { fits = false; break; }
-      }
-
-      if (fits) {
-        for (let i = 0; i < word.length; i++) {
-          const nx = x + dx * i, ny = y + dy * i;
-          grid[ny][nx] = word[i];
+    // --- ВСТАВКА СЛОВ ---
+    function placeWords() {
+      for (let y = 0; y < gridSize; y++) for (let x = 0; x < gridSize; x++) grid[y][x] = "";
+      for (const wordRaw of words) {
+        const word = formatWord(wordRaw);
+        let placed = false;
+        for (let attempt = 0; attempt < 120; attempt++) {
+          const dirOptions = {
+            easy: [[1,0],[0,1]],
+            medium: [[1,0],[0,1],[1,1]],
+            hard: [[1,0],[0,1],[1,1],[-1,1],[1,-1],[0,-1],[-1,0],[-1,-1]]
+          }[level];
+          const [dx, dy] = dirOptions[Math.floor(Math.random() * dirOptions.length)];
+          const x = Math.floor(Math.random() * gridSize);
+          const y = Math.floor(Math.random() * gridSize);
+          let fits = true;
+          for (let i = 0; i < word.length; i++) {
+            const nx = x + dx * i, ny = y + dy * i;
+            if (nx < 0 || ny < 0 || nx >= gridSize || ny >= gridSize) { fits = false; break; }
+            if (grid[ny][nx] && grid[ny][nx] !== word[i]) { fits = false; break; }
+          }
+          if (fits) {
+            for (let i = 0; i < word.length; i++) {
+              const nx = x + dx * i, ny = y + dy * i;
+              grid[ny][nx] = word[i];
+            }
+            placed = true;
+            break;
+          }
         }
-        // запоминаем, где и в каком направлении
-        placements.push({ word, start:{x,y}, dir:{dx,dy} });
-        placed = true;
-        break;
-      }
-    }
-
-    if (!placed) {
-      console.warn('Не удалось вставить слово:', wordRaw);
-    }
-  }
-
-  // 3) заполняем всё остальное случайными буквами
-  for (let y = 0; y < gridSize; y++) {
-    for (let x = 0; x < gridSize; x++) {
-      if (!grid[y][x]) {
-        const rnd = alphabetSet[Math.floor(Math.random() * alphabetSet.length)];
-        grid[y][x] = formatLetter(rnd);
-      }
-    }
-  }
-
-  // 4) убираем лишние вхождения каждого слова
-  placements.forEach(p => removeAccidental(p.word, p.start, p.dir));
-}
-// найдёт все вхождения word по всей сетке
-function findMatches(word) {
-  const matches = [];
-  const L = word.length;
-  const dirs = [[1,0],[0,1],[1,1],[-1,1],[1,-1],[0,-1],[-1,0],[-1,-1]];
-
-  for (let y = 0; y < gridSize; y++) {
-    for (let x = 0; x < gridSize; x++) {
-      dirs.forEach(([dx,dy]) => {
-        let ok = true;
-        for (let i = 0; i < L; i++) {
-          const nx = x + dx*i, ny = y + dy*i;
-          if (
-            nx < 0 || ny < 0 ||
-            nx >= gridSize || ny >= gridSize ||
-            grid[ny][nx] !== word[i]
-          ) { ok = false; break; }
+        if (!placed) {
+          console.warn('Не удалось вставить слово: ' + wordRaw);
         }
-        if (ok) matches.push({ start:{x,y}, dir:{dx,dy} });
-      });
+      }
+      for (let y = 0; y < gridSize; y++) {
+        for (let x = 0; x < gridSize; x++) {
+          if (!grid[y][x]) {
+            let rnd = alphabetSet[Math.floor(Math.random() * alphabetSet.length)];
+            grid[y][x] = formatLetter(rnd);
+          }
+        }
+      }
     }
-  }
-  return matches;
-}
-
-// убирает все совпадения, кроме намеренного
-function removeAccidental(word, intendedStart, intendedDir) {
-  const intendedKey = JSON.stringify({ start:intendedStart, dir:intendedDir });
-
-  // повторяем несколько раз, чтобы наверняка
-  for (let pass = 0; pass < 5; pass++) {
-    const all = findMatches(word);
-    const extras = all.filter(m => JSON.stringify(m) !== intendedKey);
-    if (extras.length === 0) break;
-
-    extras.forEach(m => {
-      // выберем случайную позицию в лишнем вхождении
-      const i = Math.floor(Math.random() * word.length);
-      const x = m.start.x + m.dir.dx * i;
-      const y = m.start.y + m.dir.dy * i;
-
-      // заменяем букву на случайную другую
-      let newChar;
-      do {
-        newChar = alphabetSet[Math.floor(Math.random() * alphabetSet.length)];
-      } while (newChar === grid[y][x]);
-
-      grid[y][x] = formatLetter(newChar);
-    });
-  }
-}
 
     // --- СЛОВО В ПРАВИЛЬНОМ РЕГИСТРЕ/АЛФАВИТЕ ---
     function formatWord(word) {
@@ -540,14 +389,15 @@ function removeAccidental(word, intendedStart, intendedDir) {
     }
 
     function updateWordList() {
-       wordsListEl.innerHTML = "";
-  words.forEach(word => {
-    const li = document.createElement("li");
-    li.textContent = formatWord(word).join("");
-    if (foundWords.includes(formatWord(word).join(""))) li.classList.add("found");
-    wordsListEl.appendChild(li);
-  });
-}
+      wordsListEl.innerHTML = "";
+      wordsListEl.className = style === "kids" ? "kids" : "";
+      words.forEach(word => {
+        const li = document.createElement("li");
+        li.textContent = formatWord(word).join("");
+        if (foundWords.includes(formatWord(word).join(""))) li.classList.add("found");
+        wordsListEl.appendChild(li);
+      });
+    }
 
     // --- SPARKLES ---
     function createSparkles(x, y, container) {
@@ -558,9 +408,8 @@ function removeAccidental(word, intendedStart, intendedDir) {
         sparkle.style.top = y + 'px';
         const angle = Math.random() * 2 * Math.PI;
         const dist = 21 + Math.random() * 18;
-sparkle.style.setProperty('--tx', `${Math.cos(angle)*dist}px`);
-sparkle.style.setProperty('--ty', `${Math.sin(angle)*dist}px`);
-        sparkle.style.setProperty('--ty', ${Math.sin(angle)*dist}px);
+        sparkle.style.setProperty('--tx', `${Math.cos(angle)*dist}px`);
+        sparkle.style.setProperty('--ty', `${Math.sin(angle)*dist}px`);
         setTimeout(() => sparkle.remove(), 830 + Math.random()*120);
         container.appendChild(sparkle);
       }
@@ -624,12 +473,8 @@ sparkle.style.setProperty('--ty', `${Math.sin(angle)*dist}px`);
       winSound.play();
       document.querySelectorAll(".cell").forEach(c => c.classList.add("rainbow", "glim"));
       setTimeout(() => {
-  // проставляем текст
-  messageBox.innerText = winText;
-
-  // показываем окно
-  messageBox.classList.add("show");
-}, 650);
+     messageBox.classList.add("show");
+      }, 650);
     }
   } else {
     const matching = words.some(word =>
@@ -649,10 +494,11 @@ sparkle.style.setProperty('--ty', `${Math.sin(angle)*dist}px`);
    // --- СТАРТ ---
 applyTheme();
 
-+ // удаляем все старые классы позиционирования у <ul>
-wordsListEl.classList.remove("bottom", "top", "left", "right", "none");
-+ // вешаем класс из URL
-wordsListEl.classList.add(wordsListPosition);
+const container = document.getElementById("container");
+const gridArea = document.getElementById("gridArea");
+
+container.classList.remove("words-left", "words-right", "words-top", "words-bottom", "words-none");
+container.classList.add("words-" + wordsListPosition);
 placeWords();
 renderGrid();
 updateWordList();
