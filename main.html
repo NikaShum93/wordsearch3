@@ -135,9 +135,8 @@ display: grid;
   max-height: 80vh;
   overflow-y: auto;
   font-size: 18px;
+  z-index: 5;
 }
-
-/* 2) Позиционирование */
 #wordsList.bottom {
   bottom: 16px;
   left: 50%;
@@ -164,8 +163,7 @@ display: grid;
 }
 #wordsList.none {
   display: none;
-}
-
+}}
 /* 3) Стили для элементов списка */
 #wordsList li {
   margin-bottom: 9px;
@@ -230,15 +228,12 @@ display: grid;
       100% { opacity: 0; transform: translate(var(--tx,0), var(--ty,0)) scale(0.2);}
     }
 #gridArea {
-  display: flex;
-  gap: 20px;
+   display: flex;
+  gap: 36px; /* увеличь расстояние при необходимости */
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
-
-/* Позиции списка слов */
-.words-left   #gridArea { flex-direction: row-reverse; }
-.words-right  #gridArea { flex-direction: row; }
-.words-top    #gridArea { flex-direction: column; }
-.words-bottom #gridArea { flex-direction: column-reverse; }
   </style>
 </head>
 <body>
@@ -276,7 +271,36 @@ const borderColor = borderColorParam?.startsWith("rgba") ? borderColorParam : "#
 const bgColorParam = urlParams.get("bgColor");
 const bgColor = bgColorParam?.startsWith("rgba") ? bgColorParam : "#" + (bgColorParam || "ffffff");
 const wordsListPosition = urlParams.get("wordsListPosition") || "right";
-    const sparklesOn = urlParams.get("sparkles") === "1";
+// Меняем flex-направление для gridArea в зависимости от позиции списка
+if (wordsListPosition === "right") {
+  gridArea.style.flexDirection = "row";
+} else if (wordsListPosition === "left") {
+  gridArea.style.flexDirection = "row-reverse";
+} else if (wordsListPosition === "top") {
+  gridArea.style.flexDirection = "column-reverse";
+} else if (wordsListPosition === "bottom") {
+  gridArea.style.flexDirection = "column";
+if (wordsListPosition === "none") {
+  wordsListEl.style.display = "none";
+} else {
+  wordsListEl.style.display = "";
+  // Меняем направление флекса для gridArea
+  if (wordsListPosition === "right") {
+    gridArea.style.flexDirection = "row";
+  } else if (wordsListPosition === "left") {
+    gridArea.style.flexDirection = "row-reverse";
+  } else if (wordsListPosition === "top") {
+    gridArea.style.flexDirection = "column-reverse";
+  } else if (wordsListPosition === "bottom") {
+    gridArea.style.flexDirection = "column";
+  }
+  // Меняем направление у самого списка
+  if (wordsListPosition === "top" || wordsListPosition === "bottom") {
+    wordsListEl.style.flexDirection = "row";
+  } else {
+    wordsListEl.style.flexDirection = "column";
+  }
+}    const sparklesOn = urlParams.get("sparkles") === "1";
     const alphabet = urlParams.get("alphabet") || "latin";
 
     // --- АЛФАВИТЫ ---
@@ -294,10 +318,29 @@ const wordsListPosition = urlParams.get("wordsListPosition") || "right";
     const alphabetSet = alphabets[alphabet] || alphabets.latin;
     const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(""));
 
-    const gridEl = document.getElementById("grid");
-    const wordsListEl = document.getElementById("wordsList");
+   const gridEl = document.getElementById("grid");
+const wordsListEl = document.getElementById("wordsList");
 wordsListEl.classList.remove("bottom", "top", "left", "right", "none");
-wordsListEl.classList.add(wordsListPosition);
+wordsListEl.classList.add(wordsListPosition);}
+const gridArea = document.getElementById("gridArea"); // добавь, если нет
+if (wordsListPosition === "none") {
+  wordsListEl.style.display = "none";
+} else {
+  wordsListEl.style.display = "";
+  if (wordsListPosition === "right") {
+    gridArea.style.flexDirection = "row";
+    wordsListEl.style.flexDirection = "column";
+  } else if (wordsListPosition === "left") {
+    gridArea.style.flexDirection = "row-reverse";
+    wordsListEl.style.flexDirection = "column";
+  } else if (wordsListPosition === "top") {
+    gridArea.style.flexDirection = "column-reverse";
+    wordsListEl.style.flexDirection = "row";
+  } else if (wordsListPosition === "bottom") {
+    gridArea.style.flexDirection = "column";
+    wordsListEl.style.flexDirection = "row";
+  }
+}
     const messageBox = document.getElementById("messageBox");
     const clickSound = document.getElementById("clickSound");
     const errorSound = document.getElementById("errorSound");
@@ -497,15 +540,14 @@ function removeAccidental(word, intendedStart, intendedDir) {
     }
 
     function updateWordList() {
-      wordsListEl.innerHTML = "";
-      wordsListEl.className = style === "kids" ? "kids" : "";
-      words.forEach(word => {
-        const li = document.createElement("li");
-        li.textContent = formatWord(word).join("");
-        if (foundWords.includes(formatWord(word).join(""))) li.classList.add("found");
-        wordsListEl.appendChild(li);
-      });
-    }
+       wordsListEl.innerHTML = "";
+  words.forEach(word => {
+    const li = document.createElement("li");
+    li.textContent = formatWord(word).join("");
+    if (foundWords.includes(formatWord(word).join(""))) li.classList.add("found");
+    wordsListEl.appendChild(li);
+  });
+}
 
     // --- SPARKLES ---
     function createSparkles(x, y, container) {
@@ -516,8 +558,9 @@ function removeAccidental(word, intendedStart, intendedDir) {
         sparkle.style.top = y + 'px';
         const angle = Math.random() * 2 * Math.PI;
         const dist = 21 + Math.random() * 18;
-        sparkle.style.setProperty('--tx', `${Math.cos(angle)*dist}px`);
-        sparkle.style.setProperty('--ty', `${Math.sin(angle)*dist}px`);
+sparkle.style.setProperty('--tx', `${Math.cos(angle)*dist}px`);
+sparkle.style.setProperty('--ty', `${Math.sin(angle)*dist}px`);
+        sparkle.style.setProperty('--ty', ${Math.sin(angle)*dist}px);
         setTimeout(() => sparkle.remove(), 830 + Math.random()*120);
         container.appendChild(sparkle);
       }
@@ -606,14 +649,11 @@ function removeAccidental(word, intendedStart, intendedDir) {
    // --- СТАРТ ---
 applyTheme();
 
-const container   = document.getElementById("container");
-const gridArea    = document.getElementById("gridArea");
 + // удаляем все старые классы позиционирования у <ul>
 wordsListEl.classList.remove("bottom", "top", "left", "right", "none");
 + // вешаем класс из URL
 wordsListEl.classList.add(wordsListPosition);
 placeWords();
-
 renderGrid();
 updateWordList();
 gridEl.addEventListener("click", handleClick);
